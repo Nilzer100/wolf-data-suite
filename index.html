@@ -533,21 +533,26 @@
 
         function agregarArchivos(event) {
             const input = event.target; if(input.files.length === 0) return;
-            const esPDF = (pestanaActual >= 12 && pestanaActual <= 20) || pestanaActual === 21 || pestanaActual === 25;
-            const esConvImg = pestanaActual === 22 || pestanaActual === 24; 
-            const esConvDatos = pestanaActual === 23;
             
             let hubieronErrores = false;
             for(let f of input.files) {
                 let ext = f.name.toLowerCase(); let valido = false;
-                if((esPDF || esConvPDFImg || esConvWord) && ext.endsWith('.pdf')) valido = true;
-                if((esConvImgPDF || esConvCompresor) && (ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.png') || ext.endsWith('.webp'))) valido = true;
-                if((pestanaActual <= 10 || esConvDatos) && (ext.endsWith('.xlsx') || ext.endsWith('.xls') || ext.endsWith('.csv'))) valido = true;
+                
+                // Validación estricta según el módulo activo
+                if((pestanaActual >= 12 && pestanaActual <= 20) || pestanaActual === 21 || pestanaActual === 25) {
+                    if(ext.endsWith('.pdf')) valido = true;
+                } else if(pestanaActual === 22 || pestanaActual === 24) {
+                    if(ext.match(/\.(jpg|jpeg|png|webp)$/)) valido = true;
+                } else if(pestanaActual <= 10 || pestanaActual === 23) {
+                    if(ext.match(/\.(xlsx|xls|csv)$/)) valido = true;
+                }
+                
                 if(valido) archivosGlobales.push(f); else hubieronErrores = true;
             }
             if(hubieronErrores) mostrarEstado("⚠️ Algunos archivos omitidos por formato incorrecto.", "info");
             input.value = ""; actualizarUIArchivos();
             
+            // Activar el cortador visual si estamos en la pestaña 13
             if(pestanaActual === 13 && archivosGlobales.length > 0) {
                 document.getElementById('pdfVisualGrid').style.display = 'block';
                 renderizarMiniaturasPDF(archivosGlobales[0]);
