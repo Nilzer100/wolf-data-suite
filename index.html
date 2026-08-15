@@ -270,7 +270,19 @@
 
                     <!-- CONTENIDO PDF (11-16) -->
                     <div class="tab-content" id="tab-11"><h2>📕 <strong>Fusión PDF</strong></h2><div class="info-box pdf-box"><strong>ℹ️ Une múltiples PDFs.</strong> Usa "Añadir más".</div></div>
-                    <div class="tab-content" id="tab-12"><h2>✂️ <strong>Corte Visual</strong></h2><div class="info-box pdf-box">Sube el PDF. (Por motivos de espacio visual, el cortador se ha simplificado a la lógica básica).</div></div>
+                    <div class="tab-content" id="tab-12">
+                        <h2>✂️ <strong>Corte Visual de PDF</strong></h2>
+                        <div class="info-box pdf-box">
+                            <strong>ℹ️ Extrae las páginas que no necesitas.</strong> Haz clic sobre las hojas que deseas eliminar (Se marcarán con una ✖ roja).
+                        </div>
+                        <!-- CONTENEDOR DONDE SE DIBUJAN LAS MINIATURAS -->
+                        <div id="pdfVisualGrid" style="display:none; margin-top: 25px;">
+                            <label style="color:var(--pdf-color); font-weight:800; font-size:15px; margin-bottom:15px; display:block;">
+                                👇 Haz clic en las páginas a borrar:
+                            </label>
+                            <div class="pdf-thumbnails-container" id="pdfThumbnailsContainer"></div>
+                        </div>
+                    </div>
                     <div class="tab-content" id="tab-13"><h2>🕵️ <strong>Auditoría de PDF</strong></h2><div class="info-box pdf-box">Genera reporte Excel con metadatos.</div></div>
                     <div class="tab-content" id="tab-14"><h2>🔄 <strong>Rotar Páginas</strong></h2><div class="form-group"><label>GRADOS:</label><select id="gradosRotar"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div></div>
                     <div class="tab-content" id="tab-15"><h2>🔏 <strong>Sellar Documento</strong></h2><div class="form-group"><label>TEXTO MARCA AGUA:</label><input type="text" id="textoMarcaAgua" placeholder="Ej. CONFIDENCIAL" value="CONFIDENCIAL"></div></div>
