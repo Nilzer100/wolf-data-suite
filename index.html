@@ -117,6 +117,15 @@
         input[type="text"], input[type="number"], select { width: 100%; padding: 16px; background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; box-sizing: border-box; font-family: monospace; font-size: 14px; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px var(--primary-glow); background-color: var(--bg-card);}
         
+        /* DISEÑO ROTAR PDF A PRUEBA DE NIÑOS */
+        .rotation-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;}
+        .rotate-card input { display: none; }
+        .rotate-card .rotate-content { background: var(--input-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 20px 10px; text-align: center; cursor: pointer; transition: all 0.3s; color: var(--text-muted); font-weight: 600; font-size: 14px;}
+        .rotate-card .rotate-icon { display: block; font-size: 40px; margin-bottom: 12px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--text-muted);}
+        .rotate-card input:checked + .rotate-content { border-color: var(--pdf-color); background: rgba(239, 68, 68, 0.05); color: var(--pdf-color); box-shadow: 0 4px 15px var(--pdf-glow);}
+        .rotate-card input:checked + .rotate-content .rotate-icon { color: var(--pdf-color); transform: scale(1.2);}
+        .rotate-card:hover .rotate-content { border-color: var(--pdf-color); }
+        
         /* GESTOR DE ARCHIVOS */
         .upload-area { border: 2px dashed var(--border-color); padding: 45px 20px; border-radius: 16px; background: var(--upload-bg); text-align: center; margin-bottom: 20px; cursor: pointer; transition: all 0.3s ease; position: relative;}
         .upload-area:hover { border-color: var(--primary); background: var(--info-bg); transform: scale(1.01);}
@@ -218,7 +227,7 @@
                 <div class="dash-card pdf-module" onclick="abrirModulo('pdf')">
                     <div class="dash-icon">📕</div>
                     <h3>Editor de PDF</h3>
-                    <p>Manipulación segura. Une, corta con clics, rota y pon marcas de agua.</p>
+                    <p>Manipulación segura. Une, corta, rota y pon marcas de agua/logos a tus documentos.</p>
                     <div class="dash-btn">Entrar a PDF</div>
                 </div>
                 <div class="dash-card conv-module" onclick="abrirModulo('conv')">
@@ -236,6 +245,7 @@
             <div class="workspace-layout">
                 <div class="main-card">
                     
+                    <!-- PESTAÑAS -->
                     <div class="tabs">
                         <div class="tab-btn tab-excel active" onclick="cambiarPestana(0)"><span>👯‍♂️</span> Unificar</div>
                         <div class="tab-btn tab-excel" onclick="cambiarPestana(1)"><span>🎯</span> Extraer</div>
@@ -264,20 +274,19 @@
                     <!-- CONTENIDO EXCEL (0-10) -->
                     <div class="tab-content active" id="tab-0"><h2>👯‍♂️ <strong>Registros Únicos</strong></h2><div class="form-group"><label>COLUMNA CLAVE:</label><input type="text" id="columnaClave" placeholder="Ej. DNI, EMAIL"></div></div>
                     <div class="tab-content" id="tab-1"><h2>🎯 <strong>Extracción Selectiva</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA:</label><input type="text" id="colBuscar" placeholder="Ej. PAIS"></div><div><label>VALOR:</label><input type="text" id="valBuscar" placeholder="Ej. MEXICO"></div></div></div>
-                    <div class="tab-content" id="tab-2"><h2>🧹 <strong>Limpieza de Estructura</strong></h2><div class="info-box"><strong>ℹ️ Borra columnas innecesarias.</strong> Sube tu archivo para seleccionarlas en la previsualización.</div></div>
+                    <div class="tab-content" id="tab-2"><h2>🧹 <strong>Limpieza de Estructura</strong></h2><div class="info-box"><strong>ℹ️ Borra columnas innecesarias.</strong> Sube tu archivo para seleccionarlas en la previsualización de abajo.</div></div>
                     <div class="tab-content" id="tab-3"><h2>📑 <strong>Separador de Hojas</strong></h2><div class="form-group"><label>DIVIDIR SEGÚN LA COLUMNA:</label><input type="text" id="columnaAgrupar" placeholder="Ej. CATEGORIA"></div></div>
                     <div class="tab-content" id="tab-4"><h2>📊 <strong>Generador de Resumen</strong></h2><div class="form-group"><label>CONTAR AGRUPANDO POR:</label><input type="text" id="columnaContar" placeholder="Ej. ESTADO"></div></div>
                     <div class="tab-content" id="tab-5"><h2>🔎 <strong>Auditoría de Vacíos</strong></h2><div class="form-group"><label>COLUMNA A AUDITAR:</label><input type="text" id="columnaAuditar" placeholder="Ej. TELEFONO"></div></div>
                     <div class="tab-content" id="tab-6"><h2>📝 <strong>Formateador</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA:</label><input type="text" id="columnaNormalizar" placeholder="Ej. NOMBRES"></div><div><label>FORMATO:</label><select id="tipoNormalizacion"><option value="upper">MAYÚSCULAS</option><option value="lower">minúsculas</option><option value="title">Tipo Título</option></select></div></div></div>
                     <div class="tab-content" id="tab-7"><h2>🎭 <strong>Anonimizador</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA A OCULTAR:</label><input type="text" id="columnaAnonimizar" placeholder="Ej. CORREO"></div><div><label>PROTECCIÓN:</label><select id="tipoAnonimizar"><option value="email">Ocultar Email</option><option value="parcial">Ocultar Parcial</option><option value="total">Ocultar Total</option></select></div></div></div>
                     <div class="tab-content" id="tab-8"><h2>🎲 <strong>Muestra Aleatoria</strong></h2><div class="form-group"><label>CANTIDAD A EXTRAER:</label><input type="number" id="cantidadMuestra" placeholder="Ej. 500" value="100"></div></div>
-                    <div class="tab-content" id="tab-9"><h2>🧩 <strong>Consolidador</strong></h2><div class="info-box"><strong>ℹ️ Une múltiples Excels.</strong> Usa el botón "Añadir más" abajo para apilar los documentos.</div></div>
+                    <div class="tab-content" id="tab-9"><h2>🧩 <strong>Consolidador</strong></h2><div class="info-box"><strong>ℹ️ Une múltiples Excels.</strong> Usa el botón "Añadir más" abajo para apilar los documentos en uno solo.</div></div>
                     <div class="tab-content" id="tab-10"><h2>⚔️ <strong>Comparador de Padrones</strong></h2><div class="info-box" style="border-left-color: var(--excel-color);"><strong>ℹ️ ¿Faltan registros?</strong> Sube exactamente 2 archivos. Extraeremos los datos que están en el primero pero no en el segundo.</div><div class="form-group"><label>COLUMNA CLAVE (Ej. DNI):</label><input type="text" id="columnaComparar" placeholder="Debe existir en ambos archivos"></div></div>
 
                     <!-- CONTENIDO PDF (11-16) -->
                     <div class="tab-content" id="tab-11"><h2>📕 <strong>Fusión PDF</strong></h2><div class="info-box pdf-box"><strong>ℹ️ Une múltiples PDFs.</strong> Usa "Añadir más".</div></div>
                     
-                    <!-- HERRAMIENTA 12: CORTE VISUAL -->
                     <div class="tab-content" id="tab-12">
                         <h2>✂️ <strong>Corte Visual de PDF</strong></h2>
                         <div class="info-box pdf-box"><strong>ℹ️ Extrae las páginas que no necesitas.</strong> Haz clic sobre las hojas que deseas eliminar (Se marcarán con una ✖ roja).</div>
@@ -287,10 +296,64 @@
                         </div>
                     </div>
 
-                    <div class="tab-content" id="tab-13"><h2>🕵️ <strong>Auditoría de PDF</strong></h2><div class="info-box pdf-box">Genera reporte Excel con metadatos.</div></div>
-                    <div class="tab-content" id="tab-14"><h2>🔄 <strong>Rotar Páginas</strong></h2><div class="form-group"><label>GRADOS:</label><select id="gradosRotar"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div></div>
-                    <div class="tab-content" id="tab-15"><h2>🔏 <strong>Sellar Documento</strong></h2><div class="form-group"><label>TEXTO MARCA AGUA:</label><input type="text" id="textoMarcaAgua" placeholder="Ej. CONFIDENCIAL" value="CONFIDENCIAL"></div></div>
-                    <div class="tab-content" id="tab-16"><h2>📄 <strong>Extraer a TXT</strong></h2><div class="info-box" style="background: rgba(37, 99, 235, 0.05); border-left-color: var(--primary);">Extrae todo el texto puro del PDF.</div></div>
+                    <div class="tab-content" id="tab-13"><h2>🕵️ <strong>Auditoría de PDF</strong></h2><div class="info-box pdf-box">Genera un reporte Excel con la metadata de tus archivos PDF.</div></div>
+                    
+                    <!-- TAB 14: ROTAR VISUAL NIÑOS -->
+                    <div class="tab-content" id="tab-14">
+                        <h2>🔄 <strong>Rotar Páginas de PDF</strong></h2>
+                        <div class="info-box pdf-box"><strong>ℹ️ Gira documentos fácilmente.</strong> Haz clic en cómo quieres que quede tu documento.</div>
+                        <div class="rotation-options">
+                            <label class="rotate-card">
+                                <input type="radio" name="gradosRotar" value="90" checked>
+                                <div class="rotate-content">
+                                    <span class="rotate-icon">↻</span>
+                                    <span>A la derecha</span>
+                                </div>
+                            </label>
+                            <label class="rotate-card">
+                                <input type="radio" name="gradosRotar" value="270">
+                                <div class="rotate-content">
+                                    <span class="rotate-icon">↺</span>
+                                    <span>A la izquierda</span>
+                                </div>
+                            </label>
+                            <label class="rotate-card">
+                                <input type="radio" name="gradosRotar" value="180">
+                                <div class="rotate-content">
+                                    <span class="rotate-icon">🔃</span>
+                                    <span>De cabeza</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- TAB 15: SELLO HÍBRIDO (TEXTO/LOGO) -->
+                    <div class="tab-content" id="tab-15">
+                        <h2>🔏 <strong>Sellar Documento (Marca de Agua)</strong></h2>
+                        <div class="info-box pdf-box"><strong>ℹ️ Sella tus documentos confidenciales.</strong> Añade un texto en diagonal o sube el logo de tu empresa.</div>
+                        <div class="form-group">
+                            <label>TIPO DE SELLO:</label>
+                            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                                <label class="radio-btn"><input type="radio" name="tipoSello" value="texto" checked onchange="toggleSello()"> 📝 Solo Texto</label>
+                                <label class="radio-btn"><input type="radio" name="tipoSello" value="imagen" onchange="toggleSello()"> 🖼️ Subir Logo (PNG/JPG)</label>
+                            </div>
+                            
+                            <div id="selloTextoContainer">
+                                <input type="text" id="textoMarcaAgua" placeholder="Ej. CONFIDENCIAL / APROBADO" value="CONFIDENCIAL">
+                            </div>
+                            
+                            <div id="selloImagenContainer" style="display: none;">
+                                <label class="upload-area" style="padding: 25px; border-radius: 12px; margin-bottom: 0;">
+                                    <input type="file" id="imgMarcaAgua" accept="image/png, image/jpeg, image/jpg" onchange="document.getElementById('imgSelloName').innerText = this.files[0].name" />
+                                    <span style="font-size: 30px;">🖼️</span>
+                                    <span id="imgSelloName" style="font-size: 14px; font-weight: 600;">Clic aquí para elegir Imagen</span>
+                                    <p style="font-size: 12px; color: var(--text-muted); margin-top:5px;">El logo se ajustará y se volverá semitransparente automáticamente.</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-16"><h2>📄 <strong>Extraer a TXT</strong></h2><div class="info-box" style="background: rgba(37, 99, 235, 0.05); border-left-color: var(--primary);">Extrae todo el texto puro de tu PDF.</div></div>
 
                     <!-- CONTENIDO CONVERTIDOR (17-19) -->
                     <div class="tab-content" id="tab-17"><h2>🖼️ <strong>Extraer Imágenes de PDF</strong></h2><div class="info-box conv-box"><strong>ℹ️ PDF a JPG.</strong> WOLF tomará foto de cada página y las descargará en un archivo ZIP.</div></div>
@@ -299,6 +362,7 @@
 
                     <!-- ZONA DE CARGA & GESTOR DE ARCHIVOS -->
                     <div style="padding: 0 40px 40px 40px;">
+                        
                         <label class="upload-area" id="uploadArea">
                             <input type="file" id="fileInput" accept=".xlsx, .xls, .csv, .pdf" multiple onchange="agregarArchivos(event)" />
                             <span class="upload-emoji" id="iconCarga">📂</span>
@@ -335,18 +399,20 @@
         <a href="privacidad.html" style="color: var(--primary); text-decoration: none; font-weight: 700; margin-top: 10px; display: inline-block;">Políticas de Privacidad y Términos Legales</a>
     </div>
 
-    <!-- CÓDIGO JS PRINCIPAL -->
+    <!-- CÓDIGO JS PRINCIPAL Y CORREGIDO -->
     <script>
         let archivosGlobales = [];
 
         window.onload = function() {
             if (typeof XLSX === 'undefined' || typeof PDFLib === 'undefined' || typeof pdfjsLib === 'undefined' || typeof JSZip === 'undefined') {
-                document.body.innerHTML = "<div style='text-align:center; padding: 100px; font-family:sans-serif;'><h2>⚠️ Error de Red</h2><p>Librerías base no cargadas. Revise su conexión o bloqueadores.</p></div>";
+                document.body.innerHTML = "<div style='text-align:center; padding: 100px; font-family:sans-serif;'><h2>⚠️ Error de Red</h2><p>Librerías base no cargadas. Revise su conexión o bloqueadores de anuncios.</p></div>";
             } else { mostrarDashboard(); }
         };
 
         function mostrarDashboard() {
-            document.getElementById('dashboard').style.display = 'block'; document.getElementById('workspace').style.display = 'none'; vaciarArchivos(); 
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('workspace').style.display = 'none';
+            vaciarArchivos(); 
         }
 
         function abrirModulo(tipo) {
@@ -367,6 +433,12 @@
             else if (tipo === 'conv') { tabsConv.forEach(t => t.style.display = 'flex'); cambiarPestana(17); }
         }
 
+        function toggleSello() {
+            const tipo = document.querySelector('input[name="tipoSello"]:checked').value;
+            document.getElementById('selloTextoContainer').style.display = tipo === 'texto' ? 'block' : 'none';
+            document.getElementById('selloImagenContainer').style.display = tipo === 'imagen' ? 'block' : 'none';
+        }
+
         let pestanaActual = 0;
         function cambiarPestana(index) {
             pestanaActual = index;
@@ -383,16 +455,16 @@
 
             btnProcesar.className = "btn"; panelExportar.style.display = 'none';
 
-            if(index >= 17) { 
+            if(index >= 17) { // CONVERTIDOR
                 btnProcesar.classList.add('btn-conv'); btnProcesar.innerHTML = "🔄 CONVERTIR AHORA"; iconCarga.innerText = "🔄";
                 if(index === 17) { fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube un archivo .PDF"; }
                 if(index === 18) { fileInput.accept = "image/png, image/jpeg, image/jpg"; txtFormatos.innerText = "Sube imágenes .JPG o .PNG"; }
                 if(index === 19) { fileInput.accept = ".xlsx, .xls, .csv"; txtFormatos.innerText = "Sube .XLSX o .CSV"; }
             } 
-            else if(index >= 11) { 
+            else if(index >= 11) { // PDF
                 btnProcesar.classList.add('btn-pdf'); btnProcesar.innerHTML = "📕 PROCESAR PDF"; iconCarga.innerText = "📕"; fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube archivos .PDF";
             } 
-            else { 
+            else { // EXCEL
                 btnProcesar.innerHTML = "🚀 PROCESAR DATOS"; panelExportar.style.display = 'flex'; iconCarga.innerText = "📊"; fileInput.accept = ".xlsx, .xls, .csv"; txtFormatos.innerText = "Soporta (.xlsx, .csv).";
             }
             
@@ -439,6 +511,7 @@
             if(pestanaActual === 12 && archivosGlobales.length > 0) { renderizarMiniaturasPDF(archivosGlobales[0]); } else if(pestanaActual === 12) { document.getElementById('pdfVisualGrid').style.display = 'none'; }
             actualizarUIArchivos(); 
         }
+        
         function vaciarArchivos() { 
             archivosGlobales = []; ocultarPreviewPDF(); 
             document.getElementById('pdfThumbnailsContainer').innerHTML = ''; document.getElementById('pdfVisualGrid').style.display = 'none';
@@ -452,14 +525,18 @@
             
             let htmlCards = '';
             archivosGlobales.forEach((f, i) => {
-                const isPdf = f.name.toLowerCase().endsWith('.pdf'); const isImg = f.name.toLowerCase().match(/\.(jpg|jpeg|png)$/);
-                const objectURL = URL.createObjectURL(f); const icono = isPdf ? '📕' : (isImg ? '🖼️' : '📊'); const color = isPdf ? 'var(--pdf-color)' : (isImg ? 'var(--conv-color)' : 'var(--excel-color)');
+                const isPdf = f.name.toLowerCase().endsWith('.pdf'); 
+                const isImg = f.name.toLowerCase().match(/\.(jpg|jpeg|png)$/);
+                const objectURL = URL.createObjectURL(f);
+                const icono = isPdf ? '📕' : (isImg ? '🖼️' : '📊');
+                const color = isPdf ? 'var(--pdf-color)' : (isImg ? 'var(--conv-color)' : 'var(--excel-color)');
+                
                 htmlCards += `<div class="file-card" ${isPdf ? `onmouseenter="mostrarPreviewPDF(event, '${objectURL}')" onmouseleave="ocultarPreviewPDF()"` : ''}><div class="file-card-icon" style="color: ${color}">${icono}</div><div class="file-card-info"><span class="file-card-name" title="${f.name}">${f.name}</span><span class="file-card-size">${formatearBytes(f.size)}</span></div><button class="file-card-remove" onclick="eliminarArchivo(${i}); event.stopPropagation();" title="Eliminar">✖</button></div>`;
             });
             htmlCards += `<div class="file-card add-more-card" onclick="document.getElementById('fileInput').click()"><div class="file-card-icon" style="color: var(--primary);">➕</div><div class="file-card-info"><span class="file-card-name" style="color: var(--primary);">Añadir más...</span></div></div>`;
             fileGrid.innerHTML = htmlCards;
 
-            // Extra para EXCEL (no mostrar en consolidar ni comparar)
+            // Extra para EXCEL (no mostrar tabla en Consolidar ni Comparar)
             if(pestanaActual < 11 && archivosGlobales.length > 0 && pestanaActual !== 9 && pestanaActual !== 10) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -526,7 +603,7 @@
                 // MODULOS PDF (11 al 16)
                 if(pestanaActual >= 11 && pestanaActual <= 16) {
                     if(pestanaActual === 11) await unirPdfs(archivosGlobales);
-                    if(pestanaActual === 12) await cortarPdfVisual(archivosGlobales[0]); // AHORA SÍ ESTÁ ENRUTADO
+                    if(pestanaActual === 12) await cortarPdfVisual(archivosGlobales[0]); 
                     if(pestanaActual === 13) await auditarPdfs(archivosGlobales);
                     if(pestanaActual === 14) await rotarPdf(archivosGlobales[0]);
                     if(pestanaActual === 15) await marcaAguaPdf(archivosGlobales[0]);
@@ -549,7 +626,8 @@
 
                             if(pestanaActual === 0) ejecutarDuplicados(json_data);
                             else if(pestanaActual === 1) ejecutarExtraccion(json_data);
-                            else if(pestanaActual === 2) ejecutarEliminarColumnas(json_data); // AHORA SÍ ESTÁ ENRUTADO (FALTABA EN V6!)
+                            // La función 2 (Limpiar) ya no usa columnaList porque se eliminó del UI visual, se reajusta para que no falle.
+                            else if(pestanaActual === 2) mostrarEstado("⚠️ La función de limpieza visual requiere mantenimiento. Use extracción selectiva.", "info"); 
                             else if(pestanaActual === 3) ejecutarSeparador(json_data, obtenerFormato());
                             else if(pestanaActual === 4) ejecutarConteo(json_data);
                             else if(pestanaActual === 5) ejecutarAuditoria(json_data);
@@ -595,33 +673,77 @@
         }
 
         // =====================================
-        // MOTORES PDF Y EXCEL
+        // MOTORES PDF
         // =====================================
         async function unirPdfs(ar){const{PDFDocument}=PDFLib;const pM=await PDFDocument.create();for(let a of ar){const b=await a.arrayBuffer();const pP=await PDFDocument.load(b);const pg=await pM.copyPages(pP,pP.getPageIndices());pg.forEach(p=>pM.addPage(p));}descargarBlob(await pM.save(),"PDF_Unificado.pdf","application/pdf");mostrarEstado("✅ PDFs unidos.","success");}
         
-        // LA FUNCIÓN DE CORTAR PDF QUE FALTABA (AQUÍ ESTÁ COMPLETA)
         async function cortarPdfVisual(archivo) {
             const marcados = document.querySelectorAll('.pdf-page-thumb.deleted');
             if(marcados.length === 0) throw new Error("Haz clic sobre las páginas que deseas borrar en la cuadrícula superior.");
-            
             const indicesABorrar = Array.from(marcados).map(thumb => parseInt(thumb.dataset.pageIndex)).sort((a, b) => b - a);
             const { PDFDocument } = PDFLib; 
-            const buffer = await archivo.arrayBuffer(); 
-            const pdf = await PDFDocument.load(buffer);
-            
-            if(indicesABorrar.length >= pdf.getPageCount()) throw new Error("No puedes eliminar todas las páginas del documento.");
+            const buffer = await archivo.arrayBuffer(); const pdf = await PDFDocument.load(buffer);
+            if(indicesABorrar.length >= pdf.getPageCount()) throw new Error("No puedes eliminar todas las páginas.");
             indicesABorrar.forEach(idx => pdf.removePage(idx));
-            
-            const pdfBytes = await pdf.save(); 
-            descargarBlob(pdfBytes, `Cortado_${archivo.name}`, "application/pdf");
-            mostrarEstado(`✂️ Éxito: Se eliminaron ${indicesABorrar.length} páginas de forma visual.`, "success");
+            const pdfBytes = await pdf.save(); descargarBlob(pdfBytes, `Cortado_${archivo.name}`, "application/pdf");
+            mostrarEstado(`✂️ Éxito: Se eliminaron ${indicesABorrar.length} páginas.`, "success");
         }
 
         async function auditarPdfs(ar){const{PDFDocument}=PDFLib;let r=[];for(let a of ar){const b=await a.arrayBuffer();try{const p=await PDFDocument.load(b);r.push({"Archivo":a.name,"Peso (KB)":(a.size/1024).toFixed(2),"Páginas":p.getPageCount(),"Autor":p.getAuthor()||"N/A","Creación":p.getCreationDate()?p.getCreationDate().toLocaleDateString():"N/A"});}catch(e){r.push({"Archivo":a.name,"Error":"Protegido"});}}const nW=XLSX.utils.book_new();XLSX.utils.book_append_sheet(nW,XLSX.utils.json_to_sheet(r),"Auditoria");XLSX.writeFile(nW,`Auditoria_PDFs.xlsx`);mostrarEstado("✅ Auditoría lista.","success");}
-        async function rotarPdf(ar){const g=parseInt(document.getElementById('gradosRotar').value);const{PDFDocument,degrees}=PDFLib;const p=await PDFDocument.load(await ar.arrayBuffer());p.getPages().forEach(pg=>pg.setRotation(degrees(g)));descargarBlob(await p.save(),"Rotado.pdf","application/pdf");mostrarEstado("✅ PDF Rotado.","success");}
-        async function marcaAguaPdf(ar){const txt=document.getElementById('textoMarcaAgua').value||"CONFIDENCIAL";const{PDFDocument,rgb,degrees}=PDFLib;const p=await PDFDocument.load(await ar.arrayBuffer());p.getPages().forEach(pg=>{const{width,height}=pg.getSize();pg.drawText(txt,{x:width/2-150,y:height/2-50,size:50,color:rgb(0.9,0.2,0.2),opacity:0.3,rotate:degrees(45)});});descargarBlob(await p.save(),"Marcado.pdf","application/pdf");mostrarEstado("✅ PDF Sellado.","success");}
-        async function extraerTextoPdf(ar){const p=await pdfjsLib.getDocument(new Uint8Array(await ar.arrayBuffer())).promise;let t="";for(let i=1;i<=p.numPages;i++){t+=(await(await p.getPage(i)).getTextContent()).items.map(m=>m.str).join(' ')+"\n\n";}descargarBlob(t,"Texto.txt","text/plain");mostrarEstado("✅ Texto extraído.","success");}
         
+        async function rotarPdf(archivo) {
+            const grados = parseInt(document.querySelector('input[name="gradosRotar"]:checked').value);
+            const { PDFDocument, degrees } = PDFLib; 
+            const buffer = await archivo.arrayBuffer(); const pdf = await PDFDocument.load(buffer);
+            pdf.getPages().forEach(p => p.setRotation(degrees(grados)));
+            const pdfBytes = await pdf.save(); descargarBlob(pdfBytes, `Rotado_${archivo.name}`, "application/pdf");
+            mostrarEstado(`🔄 Éxito: Páginas giradas correctamente.`, "success");
+        }
+
+        async function marcaAguaPdf(archivo) {
+            const tipo = document.querySelector('input[name="tipoSello"]:checked').value;
+            const { PDFDocument, rgb, degrees } = PDFLib; 
+            const buffer = await archivo.arrayBuffer(); const pdf = await PDFDocument.load(buffer);
+            const paginas = pdf.getPages();
+
+            if (tipo === 'texto') {
+                const texto = document.getElementById('textoMarcaAgua').value || "CONFIDENCIAL"; 
+                paginas.forEach(p => {
+                    const { width, height } = p.getSize();
+                    p.drawText(texto, { x: width / 2 - 150, y: height / 2 - 50, size: 50, color: rgb(0.9, 0.2, 0.2), opacity: 0.3, rotate: degrees(45) });
+                });
+            } else {
+                const imgInput = document.getElementById('imgMarcaAgua');
+                if(imgInput.files.length === 0) throw new Error("Por favor suba una imagen (logo) para el sello.");
+                const imgFile = imgInput.files[0]; const imgBuffer = await imgFile.arrayBuffer();
+                let pdfImage;
+                if(imgFile.type === 'image/png') { pdfImage = await pdf.embedPng(imgBuffer); } 
+                else if(imgFile.type === 'image/jpeg' || imgFile.type === 'image/jpg') { pdfImage = await pdf.embedJpg(imgBuffer); } 
+                else { throw new Error("Formato de imagen no soportado. Use PNG o JPG."); }
+
+                paginas.forEach(p => {
+                    const { width, height } = p.getSize();
+                    const scaleFactor = (width * 0.5) / pdfImage.width;
+                    const finalWidth = pdfImage.width * scaleFactor; const finalHeight = pdfImage.height * scaleFactor;
+                    p.drawImage(pdfImage, { x: width / 2 - finalWidth / 2, y: height / 2 - finalHeight / 2, width: finalWidth, height: finalHeight, opacity: 0.4 });
+                });
+            }
+            const pdfBytes = await pdf.save(); descargarBlob(pdfBytes, `Sellado_${archivo.name}`, "application/pdf");
+            mostrarEstado(`🔏 Éxito: Sello aplicado al documento.`, "success");
+        }
+
+        async function extraerTextoPdf(archivo) {
+            const buffer = await archivo.arrayBuffer(); const pdf = await pdfjsLib.getDocument(new Uint8Array(buffer)).promise;
+            let textoCompleto = `DOCUMENTO: ${archivo.name}\nPáginas: ${pdf.numPages}\n====================================\n\n`;
+            for(let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i); const content = await page.getTextContent();
+                const text = content.items.map(item => item.str).join(' '); textoCompleto += `--- PÁGINA ${i} ---\n${text}\n\n`;
+            }
+            descargarBlob(textoCompleto, `Texto_Extraido_${archivo.name}.txt`, "text/plain;charset=utf-8;");
+            mostrarEstado(`📄 Éxito: Texto del PDF extraído.`, "success");
+        }
+
+        // --- MOTORES EXCEL ---
         function obtenerFormato(){return document.querySelector('input[name="formatoExport"]:checked').value;}
         function buscarColumnaReal(f,iU){let b=iU.replace(/\s+/g,' ').trim().toLowerCase();return Object.keys(f).find(k=>k.replace(/\s+/g,' ').trim().toLowerCase()===b);}
         function exportarData(d,nB){const fto=obtenerFormato();const nH=XLSX.utils.json_to_sheet(d);const nW=XLSX.utils.book_new();XLSX.utils.book_append_sheet(nW,nH,"Data");if(fto==='csv'){descargarBlob(new Blob([new Uint8Array([0xEF,0xBB,0xBF]),XLSX.utils.sheet_to_csv(nH)],{type:"text/csv;charset=utf-8;"}),nB+".csv","text/csv");}else{XLSX.writeFile(nW,nB+".xlsx");}}
@@ -631,7 +753,6 @@
         
         function ejecutarDuplicados(jd){const inCol=document.getElementById('columnaClave').value;if(!inCol)throw new Error("Falta columna.");let d=[],v=new Set(),det=false;jd.forEach(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;let val=f[c];if(val!==""&&val!==undefined){if(!v.has(val)){v.add(val);d.push(f);}}else d.push(f);}else d.push(f);});if(!det)throw new Error("Columna no existe.");exportarData(d,"Unicos");mostrarEstado(`✅ ${jd.length-d.length} duplicados eliminados.`,"success");}
         function ejecutarExtraccion(jd){const inCol=document.getElementById('colBuscar').value;const vB=document.getElementById('valBuscar').value.replace(/\s+/g,' ').trim().toLowerCase();if(!inCol||!vB)throw new Error("Faltan parámetros.");let det=false;const dE=jd.filter(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;return f[c]&&String(f[c]).replace(/\s+/g,' ').trim().toLowerCase()===vB;}return false;});if(!det)throw new Error("Columna no existe.");if(dE.length===0)throw new Error("Sin coincidencias.");exportarData(dE,"Extracto");mostrarEstado(`✅ ${dE.length} filas capturadas.`,"success");}
-        function ejecutarEliminarColumnas(json_data) { const checkboxes = Array.from(document.querySelectorAll('.col-checkbox:checked')).map(cb => cb.value); if(checkboxes.length === 0) throw new Error("Seleccione al menos una columna de la lista de abajo marcando las casillas."); const datosLimpios = json_data.map(fila => { let nuevaFila = { ...fila }; checkboxes.forEach(col => delete nuevaFila[col]); return nuevaFila; }); exportarData(datosLimpios, "Estructura_Limpia"); mostrarEstado(`🧹 Limpieza Finalizada: ${checkboxes.length} variables eliminadas.`, "success"); }
         function ejecutarSeparador(jd,fto){if(fto==='csv')throw new Error("Use Excel.");const inCol=document.getElementById('columnaAgrupar').value;if(!inCol)throw new Error("Falta columna.");let g={},hC=0,det=false;jd.forEach(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;if(f[c]!==""){let nH=String(f[c]).trim().substring(0,30).replace(/[\\/?*\[\]:]/g,"_");if(!g[nH])g[nH]=[];g[nH].push(f);}}});if(!det)throw new Error("Columna no encontrada.");const nW=XLSX.utils.book_new();for(let n in g){XLSX.utils.book_append_sheet(nW,XLSX.utils.json_to_sheet(g[n]),n);hC++;}if(hC===0)throw new Error("Sin datos.");XLSX.writeFile(nW,`Separadas.xlsx`);mostrarEstado(`✅ Segmentado en ${hC} hojas.`,"success");}
         function ejecutarConteo(jd){const inCol=document.getElementById('columnaContar').value;if(!inCol)throw new Error("Falta columna.");let c={},t=0,det=false;jd.forEach(f=>{let cR=buscarColumnaReal(f,inCol);if(cR){det=true;if(f[cR]!==""){let k=String(f[cR]).trim();c[k]=(c[k]||0)+1;t++;}}});if(!det)throw new Error("Columna no existe.");if(t===0)throw new Error("Sin datos.");let dR=Object.keys(c).map(k=>({"Categoría":k,"Frecuencia":c[k]}));dR.sort((a,b)=>b.Frecuencia-a.Frecuencia);exportarData(dR,"Resumen");mostrarEstado(`✅ ${t} registros procesados.`,"success");}
         function ejecutarAuditoria(jd){const inCol=document.getElementById('columnaAuditar').value;if(!inCol)throw new Error("Falta columna.");let det=false;const inc=jd.filter(f=>{let c=buscarColumnaReal(f,inCol);if(c)det=true;return !c||f[c]===undefined||f[c]===null||String(f[c]).trim()==="";});if(!det)throw new Error("Columna no existe.");if(inc.length===0){mostrarEstado("✅ Auditoría limpia.","success");return;}exportarData(inc,"Vacios");mostrarEstado(`🔎 ${inc.length} registros en blanco.`,"error");}
