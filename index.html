@@ -2,9 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="google-site-verification" content="JZ-vwNtKXRDvKjNmYWZDJvDIYB0PEeBR_lGzdYARorQ" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WOLF Data Suite 🐺 | Pro Edition V6</title>
+    <title>WOLF Data Suite 🐺 | Pro Edition V7</title>
     
     <!-- LIBRERÍAS BASE -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -118,7 +117,7 @@
         input[type="text"], input[type="number"], select { width: 100%; padding: 16px; background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; box-sizing: border-box; font-family: monospace; font-size: 14px; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px var(--primary-glow); background-color: var(--bg-card);}
         
-        /* DISEÑO ROTAR PDF A PRUEBA DE NIÑOS */
+        /* DISEÑO ROTAR PDF VISUAL */
         .rotation-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;}
         .rotate-card input { display: none; }
         .rotate-card .rotate-content { background: var(--input-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 20px 10px; text-align: center; cursor: pointer; transition: all 0.3s; color: var(--text-muted); font-weight: 600; font-size: 14px;}
@@ -197,7 +196,7 @@
     <div id="loadingOverlay">
         <div class="spinner"></div>
         <h2 style="margin:0; font-size: 28px; font-weight: 800;">Procesando...</h2>
-        <p style="color: #64748b; margin-top: 15px; font-size: 16px;">Operación en curso. Por favor, espere.</p>
+        <p style="color: #64748b; margin-top: 15px; font-size: 16px;">Operación local en curso. Por favor, espere.</p>
     </div>
 
     <!-- REPRODUCTOR FLOTANTE PDF -->
@@ -205,7 +204,7 @@
 
     <nav class="navbar">
         <div class="logo" onclick="mostrarDashboard()"><span class="logo-emoji">🐺</span> WOLF <span>Data Suite</span></div>
-        <div class="nav-controls"><span class="badge">💎 PRO EDITION V6</span></div>
+        <div class="nav-controls"><span class="badge">💎 PRO EDITION V7</span></div>
     </nav>
 
     <div class="ad-space ad-horizontal" style="background: white;">📈 [AdSense 728x90] Espacio Patrocinado</div>
@@ -228,13 +227,13 @@
                 <div class="dash-card pdf-module" onclick="abrirModulo('pdf')">
                     <div class="dash-icon">📕</div>
                     <h3>Editor de PDF</h3>
-                    <p>Manipulación segura. Une, corta, rota y pon marcas de agua/logos a tus documentos.</p>
+                    <p>Manipulación segura. Une, corta con clics, rota y pon marcas de agua/logos.</p>
                     <div class="dash-btn">Entrar a PDF</div>
                 </div>
                 <div class="dash-card conv-module" onclick="abrirModulo('conv')">
                     <div class="dash-icon">🔄</div>
                     <h3>Convertidor Universal</h3>
-                    <p>Extrae imágenes de un PDF, agrupa fotos en PDF o transforma Excel ↔ CSV.</p>
+                    <p>Comprime imágenes, envuelve PDFs en Word, o transforma Excel ↔ CSV.</p>
                     <div class="dash-btn">Entrar a Convertidor</div>
                 </div>
             </div>
@@ -270,29 +269,32 @@
                         <div class="tab-btn tab-conv" onclick="cambiarPestana(17)"><span>🖼️</span> PDF a Imagen</div>
                         <div class="tab-btn tab-conv" onclick="cambiarPestana(18)"><span>📄</span> Imagen a PDF</div>
                         <div class="tab-btn tab-conv" onclick="cambiarPestana(19)"><span>🔄</span> Excel ↔ CSV</div>
+                        <div class="tab-btn tab-conv" onclick="cambiarPestana(20)"><span>🗜️</span> Comprimir</div>
+                        <div class="tab-btn tab-conv" onclick="cambiarPestana(21)"><span>📝</span> a Word (Img)</div>
                     </div>
 
                     <!-- CONTENIDO EXCEL (0-10) -->
                     <div class="tab-content active" id="tab-0"><h2>👯‍♂️ <strong>Registros Únicos</strong></h2><div class="form-group"><label>COLUMNA CLAVE:</label><input type="text" id="columnaClave" placeholder="Ej. DNI, EMAIL"></div></div>
                     <div class="tab-content" id="tab-1"><h2>🎯 <strong>Extracción Selectiva</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA:</label><input type="text" id="colBuscar" placeholder="Ej. PAIS"></div><div><label>VALOR:</label><input type="text" id="valBuscar" placeholder="Ej. MEXICO"></div></div></div>
-                    <div class="tab-content" id="tab-2"><h2>🧹 <strong>Limpieza de Estructura</strong></h2><div class="info-box"><strong>ℹ️ Borra columnas innecesarias.</strong> Sube tu archivo para seleccionarlas en la previsualización de abajo.</div></div>
+                    <div class="tab-content" id="tab-2"><h2>🧹 <strong>Limpieza de Estructura</strong></h2><div class="info-box"><strong>ℹ️ Borra columnas innecesarias.</strong> Sube tu archivo para seleccionarlas.</div></div>
                     <div class="tab-content" id="tab-3"><h2>📑 <strong>Separador de Hojas</strong></h2><div class="form-group"><label>DIVIDIR SEGÚN LA COLUMNA:</label><input type="text" id="columnaAgrupar" placeholder="Ej. CATEGORIA"></div></div>
                     <div class="tab-content" id="tab-4"><h2>📊 <strong>Generador de Resumen</strong></h2><div class="form-group"><label>CONTAR AGRUPANDO POR:</label><input type="text" id="columnaContar" placeholder="Ej. ESTADO"></div></div>
                     <div class="tab-content" id="tab-5"><h2>🔎 <strong>Auditoría de Vacíos</strong></h2><div class="form-group"><label>COLUMNA A AUDITAR:</label><input type="text" id="columnaAuditar" placeholder="Ej. TELEFONO"></div></div>
                     <div class="tab-content" id="tab-6"><h2>📝 <strong>Formateador</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA:</label><input type="text" id="columnaNormalizar" placeholder="Ej. NOMBRES"></div><div><label>FORMATO:</label><select id="tipoNormalizacion"><option value="upper">MAYÚSCULAS</option><option value="lower">minúsculas</option><option value="title">Tipo Título</option></select></div></div></div>
                     <div class="tab-content" id="tab-7"><h2>🎭 <strong>Anonimizador</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA A OCULTAR:</label><input type="text" id="columnaAnonimizar" placeholder="Ej. CORREO"></div><div><label>PROTECCIÓN:</label><select id="tipoAnonimizar"><option value="email">Ocultar Email</option><option value="parcial">Ocultar Parcial</option><option value="total">Ocultar Total</option></select></div></div></div>
                     <div class="tab-content" id="tab-8"><h2>🎲 <strong>Muestra Aleatoria</strong></h2><div class="form-group"><label>CANTIDAD A EXTRAER:</label><input type="number" id="cantidadMuestra" placeholder="Ej. 500" value="100"></div></div>
-                    <div class="tab-content" id="tab-9"><h2>🧩 <strong>Consolidador</strong></h2><div class="info-box"><strong>ℹ️ Une múltiples Excels.</strong> Usa el botón "Añadir más" abajo para apilar los documentos en uno solo.</div></div>
+                    <div class="tab-content" id="tab-9"><h2>🧩 <strong>Consolidador</strong></h2><div class="info-box"><strong>ℹ️ Une múltiples Excels.</strong> Usa el botón "Añadir más".</div></div>
                     <div class="tab-content" id="tab-10"><h2>⚔️ <strong>Comparador de Padrones</strong></h2><div class="info-box" style="border-left-color: var(--excel-color);"><strong>ℹ️ ¿Faltan registros?</strong> Sube exactamente 2 archivos. Extraeremos los datos que están en el primero pero no en el segundo.</div><div class="form-group"><label>COLUMNA CLAVE (Ej. DNI):</label><input type="text" id="columnaComparar" placeholder="Debe existir en ambos archivos"></div></div>
 
                     <!-- CONTENIDO PDF (11-16) -->
                     <div class="tab-content" id="tab-11"><h2>📕 <strong>Fusión PDF</strong></h2><div class="info-box pdf-box"><strong>ℹ️ Une múltiples PDFs.</strong> Usa "Añadir más".</div></div>
                     
+                    <!-- HERRAMIENTA 12: CORTE VISUAL -->
                     <div class="tab-content" id="tab-12">
                         <h2>✂️ <strong>Corte Visual de PDF</strong></h2>
-                        <div class="info-box pdf-box"><strong>ℹ️ Extrae las páginas que no necesitas.</strong> Haz clic sobre las hojas que deseas eliminar (Se marcarán con una ✖ roja).</div>
+                        <div class="info-box pdf-box"><strong>ℹ️ Extrae las páginas que no necesitas.</strong> Haz clic sobre las hojas que deseas eliminar.</div>
                         <div id="pdfVisualGrid" style="display:none; margin-top: 25px;">
-                            <label style="color:var(--pdf-color); font-weight:800; font-size:15px; margin-bottom:15px; display:block;">👇 Haz clic en las páginas a borrar:</label>
+                            <label style="color:var(--pdf-color); font-weight:800; font-size:15px; margin-bottom:15px; display:block;">👇 Haz clic en las páginas a borrar (se marcarán con ✖):</label>
                             <div class="pdf-thumbnails-container" id="pdfThumbnailsContainer"></div>
                         </div>
                     </div>
@@ -306,43 +308,30 @@
                         <div class="rotation-options">
                             <label class="rotate-card">
                                 <input type="radio" name="gradosRotar" value="90" checked>
-                                <div class="rotate-content">
-                                    <span class="rotate-icon">↻</span>
-                                    <span>A la derecha</span>
-                                </div>
+                                <div class="rotate-content"><span class="rotate-icon">↻</span><span>A la derecha</span></div>
                             </label>
                             <label class="rotate-card">
                                 <input type="radio" name="gradosRotar" value="270">
-                                <div class="rotate-content">
-                                    <span class="rotate-icon">↺</span>
-                                    <span>A la izquierda</span>
-                                </div>
+                                <div class="rotate-content"><span class="rotate-icon">↺</span><span>A la izquierda</span></div>
                             </label>
                             <label class="rotate-card">
                                 <input type="radio" name="gradosRotar" value="180">
-                                <div class="rotate-content">
-                                    <span class="rotate-icon">🔃</span>
-                                    <span>De cabeza</span>
-                                </div>
+                                <div class="rotate-content"><span class="rotate-icon">🔃</span><span>De cabeza</span></div>
                             </label>
                         </div>
                     </div>
 
-                    <!-- TAB 15: SELLO HÍBRIDO (TEXTO/LOGO) -->
+                    <!-- TAB 15: SELLO HÍBRIDO -->
                     <div class="tab-content" id="tab-15">
                         <h2>🔏 <strong>Sellar Documento (Marca de Agua)</strong></h2>
-                        <div class="info-box pdf-box"><strong>ℹ️ Sella tus documentos confidenciales.</strong> Añade un texto en diagonal o sube el logo de tu empresa.</div>
+                        <div class="info-box pdf-box"><strong>ℹ️ Sella tus documentos confidenciales.</strong> Añade un texto en diagonal o sube tu propio logo.</div>
                         <div class="form-group">
                             <label>TIPO DE SELLO:</label>
                             <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                                 <label class="radio-btn"><input type="radio" name="tipoSello" value="texto" checked onchange="toggleSello()"> 📝 Solo Texto</label>
                                 <label class="radio-btn"><input type="radio" name="tipoSello" value="imagen" onchange="toggleSello()"> 🖼️ Subir Logo (PNG/JPG)</label>
                             </div>
-                            
-                            <div id="selloTextoContainer">
-                                <input type="text" id="textoMarcaAgua" placeholder="Ej. CONFIDENCIAL / APROBADO" value="CONFIDENCIAL">
-                            </div>
-                            
+                            <div id="selloTextoContainer"><input type="text" id="textoMarcaAgua" placeholder="Ej. CONFIDENCIAL / APROBADO" value="CONFIDENCIAL"></div>
                             <div id="selloImagenContainer" style="display: none;">
                                 <label class="upload-area" style="padding: 25px; border-radius: 12px; margin-bottom: 0;">
                                     <input type="file" id="imgMarcaAgua" accept="image/png, image/jpeg, image/jpg" onchange="document.getElementById('imgSelloName').innerText = this.files[0].name" />
@@ -354,12 +343,32 @@
                         </div>
                     </div>
 
-                    <div class="tab-content" id="tab-16"><h2>📄 <strong>Extraer a TXT</strong></h2><div class="info-box" style="background: rgba(37, 99, 235, 0.05); border-left-color: var(--primary);">Extrae todo el texto puro de tu PDF.</div></div>
+                    <div class="tab-content" id="tab-16"><h2>📄 <strong>Extraer a TXT</strong></h2><div class="info-box" style="background: rgba(37, 99, 235, 0.05); border-left-color: var(--primary);">Extrae todo el texto puro del PDF.</div></div>
 
-                    <!-- CONTENIDO CONVERTIDOR (17-19) -->
+                    <!-- CONTENIDO CONVERTIDOR (17-21) -->
                     <div class="tab-content" id="tab-17"><h2>🖼️ <strong>Extraer Imágenes de PDF</strong></h2><div class="info-box conv-box"><strong>ℹ️ PDF a JPG.</strong> WOLF tomará foto de cada página y las descargará en un archivo ZIP.</div></div>
                     <div class="tab-content" id="tab-18"><h2>📄 <strong>Agrupar Imágenes a PDF</strong></h2><div class="info-box conv-box"><strong>ℹ️ JPG/PNG a PDF.</strong> Sube varias imágenes y conviértelas en un solo documento PDF.</div></div>
                     <div class="tab-content" id="tab-19"><h2>🔄 <strong>Transformar Formato</strong></h2><div class="info-box conv-box"><strong>ℹ️ Excel ↔ CSV.</strong> Sube tu Excel y conviértelo a CSV, o viceversa, sin perder datos.</div></div>
+                    
+                    <div class="tab-content" id="tab-20">
+                        <h2>🗜️ <strong>Compresor de Imágenes</strong></h2>
+                        <div class="info-box conv-box"><strong>ℹ️ Reduce el peso al instante.</strong> Sube fotos muy pesadas y bájales el tamaño un 80% sin perder calidad visible. Ideal para enviar por correo.</div>
+                        <div class="form-group">
+                            <label>NIVEL DE COMPRESIÓN:</label>
+                            <select id="nivelCompresion">
+                                <option value="0.8">Ligera (Buena calidad, peso medio)</option>
+                                <option value="0.5" selected>Media (Recomendado)</option>
+                                <option value="0.2">Máxima (Calidad baja, menor peso)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-21">
+                        <h2>📝 <strong>PDF a Word (Modo Visual)</strong></h2>
+                        <div class="info-box conv-box">
+                            <strong>ℹ️ Sin alterar formatos.</strong> Transforma un PDF en un documento Word (.doc) pegando cada página como una imagen de alta resolución. Perfecto para insertar tu firma en Word sin que se descuadre el texto original.
+                        </div>
+                    </div>
 
                     <!-- ZONA DE CARGA & GESTOR DE ARCHIVOS -->
                     <div style="padding: 0 40px 40px 40px;">
@@ -400,13 +409,13 @@
         <a href="privacidad.html" style="color: var(--primary); text-decoration: none; font-weight: 700; margin-top: 10px; display: inline-block;">Políticas de Privacidad y Términos Legales</a>
     </div>
 
-    <!-- CÓDIGO JS PRINCIPAL Y CORREGIDO -->
+    <!-- CÓDIGO JS PRINCIPAL -->
     <script>
         let archivosGlobales = [];
 
         window.onload = function() {
             if (typeof XLSX === 'undefined' || typeof PDFLib === 'undefined' || typeof pdfjsLib === 'undefined' || typeof JSZip === 'undefined') {
-                document.body.innerHTML = "<div style='text-align:center; padding: 100px; font-family:sans-serif;'><h2>⚠️ Error de Red</h2><p>Librerías base no cargadas. Revise su conexión o bloqueadores de anuncios.</p></div>";
+                document.body.innerHTML = "<div style='text-align:center; padding: 100px; font-family:sans-serif;'><h2>⚠️ Error de Red</h2><p>Librerías base no cargadas. Revise su conexión o bloqueadores.</p></div>";
             } else { mostrarDashboard(); }
         };
 
@@ -461,6 +470,8 @@
                 if(index === 17) { fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube un archivo .PDF"; }
                 if(index === 18) { fileInput.accept = "image/png, image/jpeg, image/jpg"; txtFormatos.innerText = "Sube imágenes .JPG o .PNG"; }
                 if(index === 19) { fileInput.accept = ".xlsx, .xls, .csv"; txtFormatos.innerText = "Sube .XLSX o .CSV"; }
+                if(index === 20) { fileInput.accept = "image/png, image/jpeg, image/jpg, image/webp"; txtFormatos.innerText = "Sube las imágenes a comprimir"; }
+                if(index === 21) { fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube tu archivo .PDF a convertir"; }
             } 
             else if(index >= 11) { // PDF
                 btnProcesar.classList.add('btn-pdf'); btnProcesar.innerHTML = "📕 PROCESAR PDF"; iconCarga.innerText = "📕"; fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube archivos .PDF";
@@ -488,12 +499,13 @@
             const input = event.target; if(input.files.length === 0) return;
             const esPDF = pestanaActual >= 11 && pestanaActual <= 16;
             const esConvPDFImg = pestanaActual === 17; const esConvImgPDF = pestanaActual === 18; const esConvDatos = pestanaActual === 19;
+            const esConvCompresor = pestanaActual === 20; const esConvWord = pestanaActual === 21;
             
             let hubieronErrores = false;
             for(let f of input.files) {
                 let ext = f.name.toLowerCase(); let valido = false;
-                if((esPDF || esConvPDFImg) && ext.endsWith('.pdf')) valido = true;
-                if(esConvImgPDF && (ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.png'))) valido = true;
+                if((esPDF || esConvPDFImg || esConvWord) && ext.endsWith('.pdf')) valido = true;
+                if((esConvImgPDF || esConvCompresor) && (ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.png') || ext.endsWith('.webp'))) valido = true;
                 if((pestanaActual < 11 || esConvDatos) && (ext.endsWith('.xlsx') || ext.endsWith('.xls') || ext.endsWith('.csv'))) valido = true;
                 if(valido) archivosGlobales.push(f); else hubieronErrores = true;
             }
@@ -527,7 +539,7 @@
             let htmlCards = '';
             archivosGlobales.forEach((f, i) => {
                 const isPdf = f.name.toLowerCase().endsWith('.pdf'); 
-                const isImg = f.name.toLowerCase().match(/\.(jpg|jpeg|png)$/);
+                const isImg = f.name.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/);
                 const objectURL = URL.createObjectURL(f);
                 const icono = isPdf ? '📕' : (isImg ? '🖼️' : '📊');
                 const color = isPdf ? 'var(--pdf-color)' : (isImg ? 'var(--conv-color)' : 'var(--excel-color)');
@@ -537,7 +549,7 @@
             htmlCards += `<div class="file-card add-more-card" onclick="document.getElementById('fileInput').click()"><div class="file-card-icon" style="color: var(--primary);">➕</div><div class="file-card-info"><span class="file-card-name" style="color: var(--primary);">Añadir más...</span></div></div>`;
             fileGrid.innerHTML = htmlCards;
 
-            // Extra para EXCEL (no mostrar tabla en Consolidar ni Comparar)
+            // Extra para EXCEL
             if(pestanaActual < 11 && archivosGlobales.length > 0 && pestanaActual !== 9 && pestanaActual !== 10) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -596,12 +608,14 @@
             if (archivosGlobales.length === 0) { mostrarEstado("⚠️ Agregue archivos al sistema.", "error"); return; }
             setCarga(true);
             try {
-                // MODULOS CONVERTIDOR
+                // MODULOS CONVERTIDOR (17-21)
                 if(pestanaActual === 17) { await pdfAImagen(archivosGlobales[0]); setCarga(false); return; }
                 if(pestanaActual === 18) { await imagenAPdf(archivosGlobales); setCarga(false); return; }
                 if(pestanaActual === 19) { await convertirDatos(archivosGlobales[0]); setCarga(false); return; }
+                if(pestanaActual === 20) { await comprimirImagenes(archivosGlobales); setCarga(false); return; }
+                if(pestanaActual === 21) { await pdfAWordVisual(archivosGlobales[0]); setCarga(false); return; }
 
-                // MODULOS PDF (11 al 16)
+                // MODULOS PDF (11-16)
                 if(pestanaActual >= 11 && pestanaActual <= 16) {
                     if(pestanaActual === 11) await unirPdfs(archivosGlobales);
                     if(pestanaActual === 12) await cortarPdfVisual(archivosGlobales[0]); 
@@ -612,7 +626,7 @@
                     setCarga(false); return;
                 }
 
-                // MODULOS EXCEL
+                // MODULOS EXCEL (0-10)
                 if(pestanaActual === 9) { await procesarConsolidadoMasivo(archivosGlobales); setCarga(false); return; }
                 if(pestanaActual === 10) { await compararExcels(archivosGlobales[0], archivosGlobales[1]); setCarga(false); return; }
 
@@ -627,8 +641,6 @@
 
                             if(pestanaActual === 0) ejecutarDuplicados(json_data);
                             else if(pestanaActual === 1) ejecutarExtraccion(json_data);
-                            // La función 2 (Limpiar) ya no usa columnaList porque se eliminó del UI visual, se reajusta para que no falle.
-                            else if(pestanaActual === 2) mostrarEstado("⚠️ La función de limpieza visual requiere mantenimiento. Use extracción selectiva.", "info"); 
                             else if(pestanaActual === 3) ejecutarSeparador(json_data, obtenerFormato());
                             else if(pestanaActual === 4) ejecutarConteo(json_data);
                             else if(pestanaActual === 5) ejecutarAuditoria(json_data);
@@ -643,7 +655,49 @@
         }
 
         // =====================================
-        // MOTORES DEL CONVERTIDOR
+        // NUEVO: COMPRESOR DE IMÁGENES Y PDF->WORD
+        // =====================================
+        async function comprimirImagenes(archivos) {
+            const calidad = parseFloat(document.getElementById('nivelCompresion').value);
+            const zip = new JSZip();
+            for(let f of archivos) {
+                const img = new Image(); img.src = URL.createObjectURL(f);
+                await new Promise(r => img.onload = r);
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width; canvas.height = img.height;
+                const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0);
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', calidad));
+                zip.file(`Comprimida_${f.name.replace(/\.[^/.]+$/, "")}.jpg`, blob);
+            }
+            if (archivos.length === 1) {
+                const blob = await zip.file(Object.keys(zip.files)[0]).async("blob");
+                descargarBlob(blob, `Comprimida_${archivos[0].name.replace(/\.[^/.]+$/, "")}.jpg`, "image/jpeg");
+            } else {
+                descargarBlob(await zip.generateAsync({type: 'blob'}), "Imagenes_Comprimidas.zip", "application/zip");
+            }
+            mostrarEstado("✅ Imágenes comprimidas con éxito.", "success");
+        }
+
+        async function pdfAWordVisual(archivo) {
+            mostrarEstado("⏳ Empaquetando PDF a Word...", "info");
+            const buffer = await archivo.arrayBuffer(); const pdf = await pdfjsLib.getDocument(new Uint8Array(buffer)).promise;
+            let htmlContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Exportado</title></head><body>`;
+            
+            for(let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i); const viewport = page.getViewport({scale: 1.5}); 
+                const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
+                const ctx = canvas.getContext('2d'); await page.render({canvasContext: ctx, viewport: viewport}).promise;
+                const base64Img = canvas.toDataURL('image/jpeg', 0.75); // Calidad para que Word no sea tan pesado
+                htmlContent += `<div style="text-align:center; page-break-after: always;"><img src="${base64Img}" style="max-width:100%; height:auto;" /></div>`;
+            }
+            htmlContent += `</body></html>`;
+            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+            descargarBlob(blob, `Word_Visual_${archivo.name.replace('.pdf', '')}.doc`, 'application/msword');
+            mostrarEstado("✅ Archivo Word generado exitosamente.", "success");
+        }
+
+        // =====================================
+        // MOTORES ANTIGUOS CONVERTIDOR
         // =====================================
         async function pdfAImagen(archivo) {
             const buffer = await archivo.arrayBuffer(); const pdf = await pdfjsLib.getDocument(new Uint8Array(buffer)).promise; const zip = new JSZip();
@@ -680,10 +734,9 @@
         
         async function cortarPdfVisual(archivo) {
             const marcados = document.querySelectorAll('.pdf-page-thumb.deleted');
-            if(marcados.length === 0) throw new Error("Haz clic sobre las páginas que deseas borrar en la cuadrícula superior.");
+            if(marcados.length === 0) throw new Error("Haz clic sobre las páginas que deseas borrar.");
             const indicesABorrar = Array.from(marcados).map(thumb => parseInt(thumb.dataset.pageIndex)).sort((a, b) => b - a);
-            const { PDFDocument } = PDFLib; 
-            const buffer = await archivo.arrayBuffer(); const pdf = await PDFDocument.load(buffer);
+            const { PDFDocument } = PDFLib; const buffer = await archivo.arrayBuffer(); const pdf = await PDFDocument.load(buffer);
             if(indicesABorrar.length >= pdf.getPageCount()) throw new Error("No puedes eliminar todas las páginas.");
             indicesABorrar.forEach(idx => pdf.removePage(idx));
             const pdfBytes = await pdf.save(); descargarBlob(pdfBytes, `Cortado_${archivo.name}`, "application/pdf");
@@ -715,12 +768,12 @@
                 });
             } else {
                 const imgInput = document.getElementById('imgMarcaAgua');
-                if(imgInput.files.length === 0) throw new Error("Por favor suba una imagen (logo) para el sello.");
+                if(imgInput.files.length === 0) throw new Error("Suba un Logo para el sello.");
                 const imgFile = imgInput.files[0]; const imgBuffer = await imgFile.arrayBuffer();
                 let pdfImage;
                 if(imgFile.type === 'image/png') { pdfImage = await pdf.embedPng(imgBuffer); } 
                 else if(imgFile.type === 'image/jpeg' || imgFile.type === 'image/jpg') { pdfImage = await pdf.embedJpg(imgBuffer); } 
-                else { throw new Error("Formato de imagen no soportado. Use PNG o JPG."); }
+                else { throw new Error("Use PNG o JPG."); }
 
                 paginas.forEach(p => {
                     const { width, height } = p.getSize();
