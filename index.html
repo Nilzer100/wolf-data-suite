@@ -2,10 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="google-site-verification" content="JZ-vwNtKXRDvKjNmYWZDJvDIYB0PEeBR_lGzdYARorQ" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WOLF Data Suite 🐺 | Pro Edition V8</title>
     
+    <!-- CÓDIGO DE GOOGLE SEARCH CONSOLE -->
+    <meta name="google-site-verification" content="JZ-vwNtKXRDvKjNmYWZDJvDIYB0PEeBR_lGzdYARorQ" />
+
     <!-- LIBRERÍAS BASE -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -327,9 +329,23 @@
                         </div>
                     </div>
 
+                    <!-- NUEVA FUNCIÓN: NUMERAR CON POSICIÓN SELECCIONABLE -->
                     <div class="tab-content" id="tab-17">
                         <h2>🔢 <strong>Numerar Páginas</strong></h2>
-                        <div class="info-box" style="background: rgba(37, 99, 235, 0.05); border-left-color: var(--primary);"><strong>ℹ️ Numeración automática.</strong> WOLF colocará "Página 1", "Página 2" en la parte inferior de todas las hojas de tu PDF.</div>
+                        <div class="info-box" style="background: rgba(37, 99, 235, 0.05); border-left-color: var(--primary);">
+                            <strong>ℹ️ Numeración automática.</strong> WOLF estampará "Página 1", "Página 2"... en todas las hojas. Elige dónde quieres que aparezca.
+                        </div>
+                        <div class="form-group">
+                            <label>POSICIÓN DE LA NUMERACIÓN:</label>
+                            <select id="posicionNumeracion">
+                                <option value="bottom-center" selected>Abajo - Centro</option>
+                                <option value="bottom-right">Abajo - Derecha</option>
+                                <option value="bottom-left">Abajo - Izquierda</option>
+                                <option value="top-center">Arriba - Centro</option>
+                                <option value="top-right">Arriba - Derecha</option>
+                                <option value="top-left">Arriba - Izquierda</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="tab-content" id="tab-18">
@@ -524,8 +540,8 @@
             let hubieronErrores = false;
             for(let f of input.files) {
                 let ext = f.name.toLowerCase(); let valido = false;
-                if(esPDF && ext.endsWith('.pdf')) valido = true;
-                if(esConvImg && (ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.png') || ext.endsWith('.webp'))) valido = true;
+                if((esPDF || esConvPDFImg || esConvWord) && ext.endsWith('.pdf')) valido = true;
+                if((esConvImgPDF || esConvCompresor) && (ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.png') || ext.endsWith('.webp'))) valido = true;
                 if((pestanaActual <= 10 || esConvDatos) && (ext.endsWith('.xlsx') || ext.endsWith('.xls') || ext.endsWith('.csv'))) valido = true;
                 if(valido) archivosGlobales.push(f); else hubieronErrores = true;
             }
@@ -571,6 +587,7 @@
             htmlCards += `<div class="file-card add-more-card" onclick="document.getElementById('fileInput').click()"><div class="file-card-icon" style="color: var(--primary);">➕</div><div class="file-card-info"><span class="file-card-name" style="color: var(--primary);">Añadir más...</span></div></div>`;
             fileGrid.innerHTML = htmlCards;
 
+            // Extra para EXCEL
             if(pestanaActual < 11 && archivosGlobales.length > 0 && pestanaActual !== 9 && pestanaActual !== 10) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -595,6 +612,9 @@
         }
         function ocultarPreviewPDF() { document.getElementById('pdfHoverPreview').style.display = 'none'; document.getElementById('pdfPreviewFrame').src = ""; }
 
+        // ==========================================
+        // CORTADOR VISUAL PDF.JS
+        // ==========================================
         async function renderizarMiniaturasPDF(archivo) {
             const container = document.getElementById('pdfThumbnailsContainer');
             container.innerHTML = `<em style="color:var(--pdf-color); font-size:14px; margin: 20px;">⏳ Generando vista de las páginas...</em>`;
@@ -707,12 +727,27 @@
         }
 
         async function numerarPdf(archivo) {
+            const posicion = document.getElementById('posicionNumeracion').value;
             const { PDFDocument, rgb } = PDFLib;
             const pdf = await PDFDocument.load(await archivo.arrayBuffer());
             const pages = pdf.getPages();
+            
             pages.forEach((p, i) => {
-                const { width } = p.getSize();
-                p.drawText(`Página ${i+1}`, { x: width/2 - 30, y: 20, size: 12, color: rgb(0,0,0) });
+                const { width, height } = p.getSize();
+                const texto = `Página ${i+1}`;
+                const textSize = 12;
+                const textWidth = texto.length * 6; // Aproximación
+                
+                let posX = width / 2 - textWidth / 2;
+                let posY = 20;
+
+                if (posicion === 'bottom-right') { posX = width - textWidth - 30; posY = 20; }
+                else if (posicion === 'bottom-left') { posX = 30; posY = 20; }
+                else if (posicion === 'top-center') { posX = width / 2 - textWidth / 2; posY = height - 30; }
+                else if (posicion === 'top-right') { posX = width - textWidth - 30; posY = height - 30; }
+                else if (posicion === 'top-left') { posX = 30; posY = height - 30; }
+                
+                p.drawText(texto, { x: posX, y: posY, size: textSize, color: rgb(0,0,0) });
             });
             descargarBlob(await pdf.save(), `Numerado_${archivo.name}`, "application/pdf");
             mostrarEstado("✅ Documento numerado con éxito.", "success");
@@ -757,8 +792,12 @@
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', calidad));
                 zip.file(`Comprimida_${f.name.replace(/\.[^/.]+$/, "")}.jpg`, blob);
             }
-            if (archivos.length === 1) { const blob = await zip.file(Object.keys(zip.files)[0]).async("blob"); descargarBlob(blob, `Comprimida_${archivos[0].name.replace(/\.[^/.]+$/, "")}.jpg`, "image/jpeg");
-            } else { descargarBlob(await zip.generateAsync({type: 'blob'}), "Imagenes_Comprimidas.zip", "application/zip"); }
+            if (archivos.length === 1) {
+                const blob = await zip.file(Object.keys(zip.files)[0]).async("blob");
+                descargarBlob(blob, `Comprimida_${archivos[0].name.replace(/\.[^/.]+$/, "")}.jpg`, "image/jpeg");
+            } else {
+                descargarBlob(await zip.generateAsync({type: 'blob'}), "Imagenes_Comprimidas.zip", "application/zip");
+            }
             mostrarEstado("✅ Imágenes comprimidas con éxito.", "success");
         }
 
@@ -766,36 +805,43 @@
             mostrarEstado("⏳ Empaquetando PDF a Word...", "info");
             const buffer = await archivo.arrayBuffer(); const pdf = await pdfjsLib.getDocument(new Uint8Array(buffer)).promise;
             let htmlContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Exportado</title></head><body>`;
+            
             for(let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i); const viewport = page.getViewport({scale: 1.5}); 
                 const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
                 const ctx = canvas.getContext('2d'); await page.render({canvasContext: ctx, viewport: viewport}).promise;
-                htmlContent += `<div style="text-align:center; page-break-after: always;"><img src="${canvas.toDataURL('image/jpeg', 0.75)}" style="max-width:100%; height:auto;" /></div>`;
+                const base64Img = canvas.toDataURL('image/jpeg', 0.75); // Calidad para que Word no sea tan pesado
+                htmlContent += `<div style="text-align:center; page-break-after: always;"><img src="${base64Img}" style="max-width:100%; height:auto;" /></div>`;
             }
             htmlContent += `</body></html>`;
-            descargarBlob(new Blob(['\ufeff', htmlContent], { type: 'application/msword' }), `Word_Visual_${archivo.name.replace('.pdf', '')}.doc`, 'application/msword');
+            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+            descargarBlob(blob, `Word_Visual_${archivo.name.replace('.pdf', '')}.doc`, 'application/msword');
             mostrarEstado("✅ Archivo Word generado exitosamente.", "success");
         }
 
         // =====================================
-        // MOTORES ANTIGUOS
+        // MOTORES ANTIGUOS CONVERTIDOR
         // =====================================
         async function pdfAImagen(archivo) {
             const buffer = await archivo.arrayBuffer(); const pdf = await pdfjsLib.getDocument(new Uint8Array(buffer)).promise; const zip = new JSZip();
             for(let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i); const viewport = page.getViewport({scale: 2.0}); const canvas = document.createElement('canvas');
-                canvas.width = viewport.width; canvas.height = viewport.height; const ctx = canvas.getContext('2d'); await page.render({canvasContext: ctx, viewport: viewport}).promise;
+                canvas.width = viewport.width; canvas.height = viewport.height; const ctx = canvas.getContext('2d');
+                await page.render({canvasContext: ctx, viewport: viewport}).promise;
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9)); zip.file(`Pagina_${i}.jpg`, blob);
             }
-            descargarBlob(await zip.generateAsync({type: 'blob'}), `Imagenes_${archivo.name}.zip`, "application/zip"); mostrarEstado("✅ Archivo ZIP descargado.", "success");
+            descargarBlob(await zip.generateAsync({type: 'blob'}), `Imagenes_${archivo.name}.zip`, "application/zip");
+            mostrarEstado("✅ PDF convertido. Archivo ZIP descargado.", "success");
         }
         async function imagenAPdf(archivos) {
             const { PDFDocument } = PDFLib; const pdfDoc = await PDFDocument.create();
             for(let f of archivos) {
-                const bytes = await f.arrayBuffer(); let img; if(f.name.toLowerCase().endsWith('.png')) img = await pdfDoc.embedPng(bytes); else img = await pdfDoc.embedJpg(bytes);
+                const bytes = await f.arrayBuffer(); let img;
+                if(f.name.toLowerCase().endsWith('.png')) img = await pdfDoc.embedPng(bytes); else img = await pdfDoc.embedJpg(bytes);
                 const page = pdfDoc.addPage([img.width, img.height]); page.drawImage(img, {x: 0, y: 0, width: img.width, height: img.height});
             }
-            descargarBlob(await pdfDoc.save(), "Imagenes_Agrupadas.pdf", "application/pdf"); mostrarEstado("✅ Imágenes convertidas a PDF.", "success");
+            descargarBlob(await pdfDoc.save(), "Imagenes_Agrupadas.pdf", "application/pdf");
+            mostrarEstado("✅ Imágenes convertidas a PDF.", "success");
         }
         async function convertirDatos(archivo) {
             const esExcel = archivo.name.toLowerCase().endsWith('.xlsx') || archivo.name.toLowerCase().endsWith('.xls');
@@ -803,48 +849,81 @@
             if(esExcel) { const csv = XLSX.utils.sheet_to_csv(ws); descargarBlob(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: "text/csv;charset=utf-8;" }), `Convertido_${archivo.name}.csv`, "text/csv"); mostrarEstado("✅ Excel convertido a CSV.", "success");
             } else { const nw = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(nw, ws, "Hoja1"); XLSX.writeFile(nw, `Convertido_${archivo.name}.xlsx`); mostrarEstado("✅ CSV convertido a Excel.", "success"); }
         }
+
+        // =====================================
+        // MOTORES PDF Y EXCEL
+        // =====================================
         async function unirPdfs(ar){const{PDFDocument}=PDFLib;const pM=await PDFDocument.create();for(let a of ar){const b=await a.arrayBuffer();const pP=await PDFDocument.load(b);const pg=await pM.copyPages(pP,pP.getPageIndices());pg.forEach(p=>pM.addPage(p));}descargarBlob(await pM.save(),"PDF_Unificado.pdf","application/pdf");mostrarEstado("✅ PDFs unidos.","success");}
+        
         async function cortarPdfVisual(archivo) {
-            const marcados = document.querySelectorAll('.pdf-page-thumb.deleted'); if(marcados.length === 0) throw new Error("Haz clic sobre las páginas que deseas borrar en la cuadrícula superior.");
+            const marcados = document.querySelectorAll('.pdf-page-thumb.deleted');
+            if(marcados.length === 0) throw new Error("Haz clic sobre las páginas que deseas borrar en la cuadrícula superior.");
+            
             const indicesABorrar = Array.from(marcados).map(thumb => parseInt(thumb.dataset.pageIndex)).sort((a, b) => b - a);
-            const { PDFDocument } = PDFLib; const pdf = await PDFDocument.load(await archivo.arrayBuffer());
+            const { PDFDocument } = PDFLib; 
+            const buffer = await archivo.arrayBuffer(); 
+            const pdf = await PDFDocument.load(buffer);
+            
             if(indicesABorrar.length >= pdf.getPageCount()) throw new Error("No puedes eliminar todas las páginas del documento.");
-            indicesABorrar.forEach(idx => pdf.removePage(idx)); descargarBlob(await pdf.save(), `Cortado_${archivo.name}`, "application/pdf"); mostrarEstado(`✂️ Éxito: Se eliminaron ${indicesABorrar.length} páginas de forma visual.`, "success");
-        }
-        async function auditarPdfs(ar){const{PDFDocument}=PDFLib;let r=[];for(let a of ar){const b=await a.arrayBuffer();try{const p=await PDFDocument.load(b);r.push({"Archivo":a.name,"Peso (KB)":(a.size/1024).toFixed(2),"Páginas":p.getPageCount(),"Autor":p.getAuthor()||"N/A","Creación":p.getCreationDate()?p.getCreationDate().toLocaleDateString():"N/A"});}catch(e){r.push({"Archivo":a.name,"Error":"Protegido"});}}const nW=XLSX.utils.book_new();XLSX.utils.book_append_sheet(nW,XLSX.utils.json_to_sheet(r),"Auditoria");XLSX.writeFile(nW,`Auditoria_PDFs.xlsx`);mostrarEstado("✅ Auditoría lista.","success");}
-        async function rotarPdf(archivo) {
-            const grados = parseInt(document.querySelector('input[name="gradosRotar"]:checked').value); const { PDFDocument, degrees } = PDFLib; 
-            const pdf = await PDFDocument.load(await archivo.arrayBuffer()); pdf.getPages().forEach(p => p.setRotation(degrees(grados))); descargarBlob(await pdf.save(), `Rotado_${archivo.name}`, "application/pdf"); mostrarEstado(`🔄 Éxito: Páginas giradas correctamente.`, "success");
-        }
-        async function marcaAguaPdf(archivo) {
-            const tipo = document.querySelector('input[name="tipoSello"]:checked').value; const { PDFDocument, rgb, degrees } = PDFLib; 
-            const pdf = await PDFDocument.load(await archivo.arrayBuffer()); const paginas = pdf.getPages();
-            if (tipo === 'texto') {
-                const texto = document.getElementById('textoMarcaAgua').value || "CONFIDENCIAL"; 
-                paginas.forEach(p => { const { width, height } = p.getSize(); p.drawText(texto, { x: width / 2 - 150, y: height / 2 - 50, size: 50, color: rgb(0.9, 0.2, 0.2), opacity: 0.3, rotate: degrees(45) }); });
-            } else {
-                const imgInput = document.getElementById('imgMarcaAgua'); if(imgInput.files.length === 0) throw new Error("Suba un Logo para el sello.");
-                const imgFile = imgInput.files[0]; const imgBuffer = await imgFile.arrayBuffer();
-                let pdfImage; if(imgFile.type === 'image/png') { pdfImage = await pdf.embedPng(imgBuffer); } else if(imgFile.type === 'image/jpeg' || imgFile.type === 'image/jpg') { pdfImage = await pdf.embedJpg(imgBuffer); } else { throw new Error("Use PNG o JPG."); }
-                paginas.forEach(p => { const { width, height } = p.getSize(); const scaleFactor = (width * 0.5) / pdfImage.width; const finalWidth = pdfImage.width * scaleFactor; const finalHeight = pdfImage.height * scaleFactor; p.drawImage(pdfImage, { x: width / 2 - finalWidth / 2, y: height / 2 - finalHeight / 2, width: finalWidth, height: finalHeight, opacity: 0.4 }); });
-            }
-            descargarBlob(await pdf.save(), `Sellado_${archivo.name}`, "application/pdf"); mostrarEstado(`🔏 Éxito: Sello aplicado al documento.`, "success");
-        }
-        async function extraerTextoPdf(archivo) {
-            const pdf = await pdfjsLib.getDocument(new Uint8Array(await archivo.arrayBuffer())).promise; let textoCompleto = `DOCUMENTO: ${archivo.name}\nPáginas: ${pdf.numPages}\n====================================\n\n`;
-            for(let i = 1; i <= pdf.numPages; i++) { const page = await pdf.getPage(i); const content = await page.getTextContent(); const text = content.items.map(item => item.str).join(' '); textoCompleto += `--- PÁGINA ${i} ---\n${text}\n\n`; }
-            descargarBlob(textoCompleto, `Texto_Extraido_${archivo.name}.txt`, "text/plain;charset=utf-8;"); mostrarEstado(`📄 Éxito: Texto del PDF extraído.`, "success");
+            indicesABorrar.forEach(idx => pdf.removePage(idx));
+            
+            const pdfBytes = await pdf.save(); 
+            descargarBlob(pdfBytes, `Cortado_${archivo.name}`, "application/pdf");
+            mostrarEstado(`✂️ Éxito: Se eliminaron ${indicesABorrar.length} páginas de forma visual.`, "success");
         }
 
-        // --- MOTORES EXCEL ---
+        async function auditarPdfs(ar){const{PDFDocument}=PDFLib;let r=[];for(let a of ar){const b=await a.arrayBuffer();try{const p=await PDFDocument.load(b);r.push({"Archivo":a.name,"Peso (KB)":(a.size/1024).toFixed(2),"Páginas":p.getPageCount(),"Autor":p.getAuthor()||"N/A","Creación":p.getCreationDate()?p.getCreationDate().toLocaleDateString():"N/A"});}catch(e){r.push({"Archivo":a.name,"Error":"Protegido"});}}const nW=XLSX.utils.book_new();XLSX.utils.book_append_sheet(nW,XLSX.utils.json_to_sheet(r),"Auditoria");XLSX.writeFile(nW,`Auditoria_PDFs.xlsx`);mostrarEstado("✅ Auditoría lista.","success");}
+        async function rotarPdf(ar){const g=parseInt(document.querySelector('input[name="gradosRotar"]:checked').value);const{PDFDocument,degrees}=PDFLib;const p=await PDFDocument.load(await ar.arrayBuffer());p.getPages().forEach(pg=>pg.setRotation(degrees(g)));descargarBlob(await p.save(),"Rotado.pdf","application/pdf");mostrarEstado("✅ PDF Rotado.","success");}
+        
+        async function marcaAguaPdf(archivo) {
+            const tipo = document.querySelector('input[name="tipoSello"]:checked').value;
+            const { PDFDocument, rgb, degrees } = PDFLib; 
+            const buffer = await archivo.arrayBuffer(); const pdf = await PDFDocument.load(buffer);
+            const paginas = pdf.getPages();
+
+            if (tipo === 'texto') {
+                const texto = document.getElementById('textoMarcaAgua').value || "CONFIDENCIAL"; 
+                paginas.forEach(p => {
+                    const { width, height } = p.getSize();
+                    p.drawText(texto, { x: width / 2 - 150, y: height / 2 - 50, size: 50, color: rgb(0.9, 0.2, 0.2), opacity: 0.3, rotate: degrees(45) });
+                });
+            } else {
+                const imgInput = document.getElementById('imgMarcaAgua');
+                if(imgInput.files.length === 0) throw new Error("Por favor suba una imagen (logo) para el sello.");
+                const imgFile = imgInput.files[0];
+                const imgBuffer = await imgFile.arrayBuffer();
+                let pdfImage;
+                if(imgFile.type === 'image/png') { pdfImage = await pdf.embedPng(imgBuffer); } 
+                else if(imgFile.type === 'image/jpeg' || imgFile.type === 'image/jpg') { pdfImage = await pdf.embedJpg(imgBuffer); } 
+                else { throw new Error("Formato de imagen no soportado. Use PNG o JPG."); }
+
+                paginas.forEach(p => {
+                    const { width, height } = p.getSize();
+                    const scaleFactor = (width * 0.5) / pdfImage.width;
+                    const finalWidth = pdfImage.width * scaleFactor;
+                    const finalHeight = pdfImage.height * scaleFactor;
+                    p.drawImage(pdfImage, { 
+                        x: width / 2 - finalWidth / 2, y: height / 2 - finalHeight / 2, 
+                        width: finalWidth, height: finalHeight, opacity: 0.4
+                    });
+                });
+            }
+            const pdfBytes = await pdf.save(); descargarBlob(pdfBytes, `Sellado_${archivo.name}`, "application/pdf");
+            mostrarEstado(`🔏 Éxito: Sello aplicado al documento.`, "success");
+        }
+
+        async function extraerTextoPdf(ar){const p=await pdfjsLib.getDocument(new Uint8Array(await ar.arrayBuffer())).promise;let t="";for(let i=1;i<=p.numPages;i++){t+=(await(await p.getPage(i)).getTextContent()).items.map(m=>m.str).join(' ')+"\n\n";}descargarBlob(t,"Texto.txt","text/plain");mostrarEstado("✅ Texto extraído.","success");}
+        
         function obtenerFormato(){return document.querySelector('input[name="formatoExport"]:checked').value;}
         function buscarColumnaReal(f,iU){let b=iU.replace(/\s+/g,' ').trim().toLowerCase();return Object.keys(f).find(k=>k.replace(/\s+/g,' ').trim().toLowerCase()===b);}
         function exportarData(d,nB){const fto=obtenerFormato();const nH=XLSX.utils.json_to_sheet(d);const nW=XLSX.utils.book_new();XLSX.utils.book_append_sheet(nW,nH,"Data");if(fto==='csv'){descargarBlob(new Blob([new Uint8Array([0xEF,0xBB,0xBF]),XLSX.utils.sheet_to_csv(nH)],{type:"text/csv;charset=utf-8;"}),nB+".csv","text/csv");}else{XLSX.writeFile(nW,nB+".xlsx");}}
+        
         async function procesarConsolidadoMasivo(ar){let d=[];for(let a of ar){const w=XLSX.read(new Uint8Array(await a.arrayBuffer()),{type:'array',cellDates:true});d=d.concat(XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]],{defval:""}));}exportarData(d,"Consolidado");mostrarEstado("✅ Archivos unidos.","success");}
         async function compararExcels(a1,a2){const col=document.getElementById('columnaComparar').value;if(!col)throw new Error("Falta columna");const d1=XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(await a1.arrayBuffer()),{type:'array'}).Sheets[0],{defval:""});const d2=XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(await a2.arrayBuffer()),{type:'array'}).Sheets[0],{defval:""});let s2=new Set();d2.forEach(f=>{let c=buscarColumnaReal(f,col);if(c&&f[c]!=="")s2.add(String(f[c]).trim().toLowerCase());});let fl=[];let det=false;d1.forEach(f=>{let c=buscarColumnaReal(f,col);if(c){det=true;let v=String(f[c]).trim().toLowerCase();if(v!==""&&!s2.has(v))fl.push(f);}});if(!det)throw new Error("Columna no existe en Archivo 1");if(fl.length===0){mostrarEstado("✅ No faltan registros.","success");return;}exportarData(fl,"Faltantes");mostrarEstado(`✅ Faltan ${fl.length} registros.`,`info`);}
+        
         function ejecutarDuplicados(jd){const inCol=document.getElementById('columnaClave').value;if(!inCol)throw new Error("Falta columna.");let d=[],v=new Set(),det=false;jd.forEach(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;let val=f[c];if(val!==""&&val!==undefined){if(!v.has(val)){v.add(val);d.push(f);}}else d.push(f);}else d.push(f);});if(!det)throw new Error("Columna no existe.");exportarData(d,"Unicos");mostrarEstado(`✅ ${jd.length-d.length} duplicados eliminados.`,"success");}
         function ejecutarExtraccion(jd){const inCol=document.getElementById('colBuscar').value;const vB=document.getElementById('valBuscar').value.replace(/\s+/g,' ').trim().toLowerCase();if(!inCol||!vB)throw new Error("Faltan parámetros.");let det=false;const dE=jd.filter(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;return f[c]&&String(f[c]).replace(/\s+/g,' ').trim().toLowerCase()===vB;}return false;});if(!det)throw new Error("Columna no existe.");if(dE.length===0)throw new Error("Sin coincidencias.");exportarData(dE,"Extracto");mostrarEstado(`✅ ${dE.length} filas capturadas.`,"success");}
-        function ejecutarEliminarColumnas(jd) { const checkboxes = Array.from(document.querySelectorAll('.col-checkbox:checked')).map(cb => cb.value); if(checkboxes.length === 0) throw new Error("Seleccione al menos una columna de la lista de abajo."); const dL = jd.map(fila => { let nuevaFila = { ...fila }; checkboxes.forEach(col => delete nuevaFila[col]); return nuevaFila; }); exportarData(dL, "Limpio"); mostrarEstado(`🧹 Limpieza Finalizada: ${checkboxes.length} variables eliminadas.`, "success"); }
+        function ejecutarEliminarColumnas(json_data) { const checkboxes = Array.from(document.querySelectorAll('.col-checkbox:checked')).map(cb => cb.value); if(checkboxes.length === 0) throw new Error("Seleccione al menos una columna de la lista de abajo marcando las casillas."); const datosLimpios = json_data.map(fila => { let nuevaFila = { ...fila }; checkboxes.forEach(col => delete nuevaFila[col]); return nuevaFila; }); exportarData(datosLimpios, "Estructura_Limpia"); mostrarEstado(`🧹 Limpieza Finalizada: ${checkboxes.length} variables eliminadas.`, "success"); }
         function ejecutarSeparador(jd,fto){if(fto==='csv')throw new Error("Use Excel.");const inCol=document.getElementById('columnaAgrupar').value;if(!inCol)throw new Error("Falta columna.");let g={},hC=0,det=false;jd.forEach(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;if(f[c]!==""){let nH=String(f[c]).trim().substring(0,30).replace(/[\\/?*\[\]:]/g,"_");if(!g[nH])g[nH]=[];g[nH].push(f);}}});if(!det)throw new Error("Columna no encontrada.");const nW=XLSX.utils.book_new();for(let n in g){XLSX.utils.book_append_sheet(nW,XLSX.utils.json_to_sheet(g[n]),n);hC++;}if(hC===0)throw new Error("Sin datos.");XLSX.writeFile(nW,`Separadas.xlsx`);mostrarEstado(`✅ Segmentado en ${hC} hojas.`,"success");}
         function ejecutarConteo(jd){const inCol=document.getElementById('columnaContar').value;if(!inCol)throw new Error("Falta columna.");let c={},t=0,det=false;jd.forEach(f=>{let cR=buscarColumnaReal(f,inCol);if(cR){det=true;if(f[cR]!==""){let k=String(f[cR]).trim();c[k]=(c[k]||0)+1;t++;}}});if(!det)throw new Error("Columna no existe.");if(t===0)throw new Error("Sin datos.");let dR=Object.keys(c).map(k=>({"Categoría":k,"Frecuencia":c[k]}));dR.sort((a,b)=>b.Frecuencia-a.Frecuencia);exportarData(dR,"Resumen");mostrarEstado(`✅ ${t} registros procesados.`,"success");}
         function ejecutarAuditoria(jd){const inCol=document.getElementById('columnaAuditar').value;if(!inCol)throw new Error("Falta columna.");let det=false;const inc=jd.filter(f=>{let c=buscarColumnaReal(f,inCol);if(c)det=true;return !c||f[c]===undefined||f[c]===null||String(f[c]).trim()==="";});if(!det)throw new Error("Columna no existe.");if(inc.length===0){mostrarEstado("✅ Auditoría limpia.","success");return;}exportarData(inc,"Vacios");mostrarEstado(`🔎 ${inc.length} registros en blanco.`,"error");}
