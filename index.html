@@ -4,24 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WOLF Data Suite 🐺 | Pro Edition V6</title>
-    <!-- Librerías Core -->
+    
+    <!-- LIBRERÍAS BASE -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <!-- NUEVA: Librería para comprimir imágenes en ZIP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';</script>
     
+    <!-- CÓDIGO DE GOOGLE ADSENSE -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3521567153962789" crossorigin="anonymous"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-        /* VARIABLES DE TEMA ÚNICO */
+        /* VARIABLES */
         :root {
             --bg-page: #f8fafc; --bg-card: #ffffff; 
             --primary: #2563eb; --primary-glow: rgba(37, 99, 235, 0.25); 
             --pdf-color: #dc2626; --pdf-glow: rgba(220, 38, 38, 0.25);
             --excel-color: #059669; --excel-glow: rgba(5, 150, 105, 0.25);
-            --conv-color: #f59e0b; --conv-glow: rgba(245, 158, 11, 0.25); /* Color Ámbar para Convertidor */
+            --conv-color: #f59e0b; --conv-glow: rgba(245, 158, 11, 0.25); 
             --text-main: #0f172a; --text-muted: #64748b; --border-color: #e2e8f0; --tab-bg: #f1f5f9;
             --input-bg: #f8fafc; --upload-bg: #f8fafc; --shadow-card: 0 20px 40px -10px rgba(0, 0, 0, 0.08); 
             --ad-bg: #f1f5f9; --info-bg: #eff6ff; --info-border: #bfdbfe; --hover-tab: #e2e8f0;
@@ -29,11 +32,10 @@
         
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-page); background-image: radial-gradient(var(--border-color) 1px, transparent 1px); background-size: 24px 24px; color: var(--text-main); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh;}
         
-        /* OVERLAY BLINDAJE & HOVER PDF */
+        /* OVERLAY Y HOVER PDF */
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: var(--text-main); }
         .spinner { width: 70px; height: 70px; border: 6px solid var(--border-color); border-top: 6px solid var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite; margin-bottom: 25px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         #pdfHoverPreview { display: none; position: fixed; z-index: 10000; width: 340px; height: 440px; background: var(--bg-card); border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); border: 1px solid var(--border-color); overflow: hidden; pointer-events: none; animation: fadeIn 0.2s ease; }
         .pdf-preview-header { background: var(--primary); color: white; padding: 10px 15px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;}
         
@@ -47,7 +49,7 @@
 
         .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box;}
         
-        /* DASHBOARD GRID (AHORA CON 3 COLUMNAS) */
+        /* DASHBOARD */
         .dashboard-header { text-align: center; margin-bottom: 50px; animation: fadeIn 0.6s ease; }
         .dashboard-header h1 { font-size: 42px; font-weight: 800; margin-bottom: 15px; color: var(--text-main); letter-spacing: -1.5px;}
         .dashboard-header p { font-size: 18px; color: var(--text-muted); }
@@ -55,22 +57,17 @@
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 35px; max-width: 1100px; margin: 0 auto; animation: slideUpFade 0.5s ease; }
         .dash-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 45px 30px; text-align: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); position: relative; overflow: hidden;}
         .dash-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; transition: all 0.4s ease;}
-        
         .dash-card.excel-module::before { background: var(--excel-color); }
         .dash-card.excel-module:hover { transform: translateY(-10px); border-color: var(--excel-color); box-shadow: 0 30px 60px var(--excel-glow); }
         .dash-card.excel-module .dash-icon { background: rgba(16, 185, 129, 0.1); color: var(--excel-color); }
-        
         .dash-card.pdf-module::before { background: var(--pdf-color); }
         .dash-card.pdf-module:hover { transform: translateY(-10px); border-color: var(--pdf-color); box-shadow: 0 30px 60px var(--pdf-glow); }
         .dash-card.pdf-module .dash-icon { background: rgba(239, 68, 68, 0.1); color: var(--pdf-color); }
-
         .dash-card.conv-module::before { background: var(--conv-color); }
         .dash-card.conv-module:hover { transform: translateY(-10px); border-color: var(--conv-color); box-shadow: 0 30px 60px var(--conv-glow); }
         .dash-card.conv-module .dash-icon { background: rgba(245, 158, 11, 0.1); color: var(--conv-color); }
-
         .dash-icon { font-size: 55px; width: 100px; height: 100px; line-height: 100px; border-radius: 50%; margin: 0 auto 25px auto; transition: transform 0.4s ease; }
         .dash-card:hover .dash-icon { transform: scale(1.1) rotate(5deg); }
-        
         .dash-card h3 { font-size: 24px; font-weight: 800; margin-bottom: 15px; color: var(--text-main); letter-spacing: -0.5px;}
         .dash-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px;}
         .dash-btn { padding: 12px 25px; border-radius: 30px; font-weight: 600; font-size: 14px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); transition: all 0.3s ease;}
@@ -86,14 +83,12 @@
 
         .main-card { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: var(--shadow-card); }
         
-        /* PESTAÑAS */
         .tabs { display: flex; flex-wrap: wrap; background: var(--tab-bg); border-bottom: 1px solid var(--border-color); padding: 10px 10px 0 10px; gap: 5px;}
         .tab-btn { flex: 1 1 80px; padding: 12px 5px; text-align: center; font-weight: 600; font-size: 11px; cursor: pointer; color: var(--text-muted); transition: all 0.3s ease; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .tab-btn span { font-size: 22px; transition: transform 0.3s ease;}
         .tab-btn.active { color: var(--primary); background: var(--bg-card); box-shadow: 0 -4px 10px rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-bottom: none;}
         .tab-btn.active span { transform: scale(1.15); }
         .tab-btn:hover:not(.active) { color: var(--text-main); background: var(--hover-tab);}
-        
         .tab-pdf { color: #f87171; } .tab-btn.active.tab-pdf { color: var(--pdf-color); }
         .tab-conv { color: #fbbf24; } .tab-btn.active.tab-conv { color: var(--conv-color); }
         
@@ -105,10 +100,8 @@
         /* INFO BOXES */
         .info-box { background: var(--info-bg); border-left: 4px solid var(--primary); padding: 20px 24px; border-radius: 0 12px 12px 0; margin-bottom: 30px; color: #334155; font-size: 14px; line-height: 1.6; border-top: 1px solid var(--info-border); border-right: 1px solid var(--info-border); border-bottom: 1px solid var(--info-border); }
         .info-box strong { color: var(--primary); font-size: 15px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;}
-        
         .info-box.pdf-box { background: rgba(239, 68, 68, 0.05); border-left-color: var(--pdf-color); border-top-color: rgba(239, 68, 68, 0.2); border-right-color: rgba(239, 68, 68, 0.2); border-bottom-color: rgba(239, 68, 68, 0.2); }
         .info-box.pdf-box strong { color: var(--pdf-color); }
-        
         .info-box.conv-box { background: rgba(245, 158, 11, 0.05); border-left-color: var(--conv-color); border-top-color: rgba(245, 158, 11, 0.2); border-right-color: rgba(245, 158, 11, 0.2); border-bottom-color: rgba(245, 158, 11, 0.2); }
         .info-box.conv-box strong { color: var(--conv-color); }
 
@@ -123,7 +116,6 @@
         label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 13px; color: var(--text-main); letter-spacing: 0.3px;}
         input[type="text"], input[type="number"], select { width: 100%; padding: 16px; background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; box-sizing: border-box; font-family: monospace; font-size: 14px; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px var(--primary-glow); background-color: var(--bg-card);}
-        ::placeholder { color: #94a3b8; opacity: 0.8; font-style: normal; font-family: 'Inter', sans-serif;}
         
         /* GESTOR DE ARCHIVOS */
         .upload-area { border: 2px dashed var(--border-color); padding: 45px 20px; border-radius: 16px; background: var(--upload-bg); text-align: center; margin-bottom: 20px; cursor: pointer; transition: all 0.3s ease; position: relative;}
@@ -155,6 +147,21 @@
         th { background: var(--tab-bg); color: var(--text-main); padding: 12px 15px; text-align: left; font-weight: 700; white-space: nowrap; border-bottom: 2px solid var(--border-color);}
         td { padding: 10px 15px; border-bottom: 1px solid var(--border-color); color: #475569; white-space: nowrap;}
         
+        /* CORTADOR PDF VISUAL */
+        #pdfVisualGrid { display: none; margin-top: 25px;}
+        .pdf-thumbnails-container { display: flex; gap: 20px; overflow-x: auto; padding: 25px; background: var(--input-bg); border-radius: 16px; border: 1px solid var(--border-color); box-shadow: inset 0 4px 6px rgba(0,0,0,0.02); scroll-behavior: smooth;}
+        .pdf-page-thumb { position: relative; flex: 0 0 auto; cursor: pointer; border-radius: 10px; overflow: hidden; border: 3px solid transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 20px rgba(0,0,0,0.08); background: white;}
+        .pdf-page-thumb canvas { display: block; height: 240px; width: auto; }
+        .pdf-page-thumb .page-number { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 5px 10px; border-radius: 8px; font-size: 13px; font-weight: 800;}
+        .pdf-page-thumb .delete-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239, 68, 68, 0.85); color: white; display: flex; align-items: center; justify-content: center; font-size: 70px; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: grayscale(100%);}
+        .pdf-page-thumb.deleted { border-color: #ef4444; transform: scale(0.92); box-shadow: 0 0 20px rgba(239,68,68,0.4);}
+        .pdf-page-thumb.deleted .delete-overlay { opacity: 1; }
+        .pdf-page-thumb:hover:not(.deleted) { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15);}
+        .pdf-page-thumb:hover:not(.deleted) .delete-overlay { opacity: 0.15; }
+        .pdf-thumbnails-container::-webkit-scrollbar { height: 12px; }
+        .pdf-thumbnails-container::-webkit-scrollbar-track { background: var(--border-color); border-radius: 10px; }
+        .pdf-thumbnails-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; border: 3px solid var(--border-color);}
+
         .export-options { background: var(--tab-bg); padding: 20px 25px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 30px; flex-wrap: wrap;}
         .radio-btn { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: var(--text-main); font-weight: 700;}
 
@@ -211,7 +218,7 @@
                 <div class="dash-card pdf-module" onclick="abrirModulo('pdf')">
                     <div class="dash-icon">📕</div>
                     <h3>Editor de PDF</h3>
-                    <p>Manipulación segura. Une, corta, rota y pon marcas de agua a tus documentos.</p>
+                    <p>Manipulación segura. Une, corta con clics, rota y pon marcas de agua.</p>
                     <div class="dash-btn">Entrar a PDF</div>
                 </div>
                 <div class="dash-card conv-module" onclick="abrirModulo('conv')">
@@ -228,7 +235,7 @@
             <button class="btn-back" onclick="mostrarDashboard()">⬅️ Volver al Menú Principal</button>
             <div class="workspace-layout">
                 <div class="main-card">
-                    <!-- PESTAÑAS (EXCEL, PDF, CONVERTIDOR) -->
+                    
                     <div class="tabs">
                         <div class="tab-btn tab-excel active" onclick="cambiarPestana(0)"><span>👯‍♂️</span> Unificar</div>
                         <div class="tab-btn tab-excel" onclick="cambiarPestana(1)"><span>🎯</span> Extraer</div>
@@ -249,7 +256,6 @@
                         <div class="tab-btn tab-pdf" onclick="cambiarPestana(15)"><span>🔏</span> Sellar</div>
                         <div class="tab-btn tab-pdf" onclick="cambiarPestana(16)" style="color:var(--primary);"><span>📄</span> a Texto</div> 
 
-                        <!-- NUEVAS PESTAÑAS: CONVERTIDOR -->
                         <div class="tab-btn tab-conv" onclick="cambiarPestana(17)"><span>🖼️</span> PDF a Imagen</div>
                         <div class="tab-btn tab-conv" onclick="cambiarPestana(18)"><span>📄</span> Imagen a PDF</div>
                         <div class="tab-btn tab-conv" onclick="cambiarPestana(19)"><span>🔄</span> Excel ↔ CSV</div>
@@ -258,53 +264,41 @@
                     <!-- CONTENIDO EXCEL (0-10) -->
                     <div class="tab-content active" id="tab-0"><h2>👯‍♂️ <strong>Registros Únicos</strong></h2><div class="form-group"><label>COLUMNA CLAVE:</label><input type="text" id="columnaClave" placeholder="Ej. DNI, EMAIL"></div></div>
                     <div class="tab-content" id="tab-1"><h2>🎯 <strong>Extracción Selectiva</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA:</label><input type="text" id="colBuscar" placeholder="Ej. PAIS"></div><div><label>VALOR:</label><input type="text" id="valBuscar" placeholder="Ej. MEXICO"></div></div></div>
-                    <div class="tab-content" id="tab-2"><h2>🧹 <strong>Limpieza de Estructura</strong></h2><div class="info-box"><strong>ℹ️ Borra columnas innecesarias.</strong> Sube tu archivo para seleccionarlas.</div></div>
+                    <div class="tab-content" id="tab-2"><h2>🧹 <strong>Limpieza de Estructura</strong></h2><div class="info-box"><strong>ℹ️ Borra columnas innecesarias.</strong> Sube tu archivo para seleccionarlas en la previsualización.</div></div>
                     <div class="tab-content" id="tab-3"><h2>📑 <strong>Separador de Hojas</strong></h2><div class="form-group"><label>DIVIDIR SEGÚN LA COLUMNA:</label><input type="text" id="columnaAgrupar" placeholder="Ej. CATEGORIA"></div></div>
                     <div class="tab-content" id="tab-4"><h2>📊 <strong>Generador de Resumen</strong></h2><div class="form-group"><label>CONTAR AGRUPANDO POR:</label><input type="text" id="columnaContar" placeholder="Ej. ESTADO"></div></div>
                     <div class="tab-content" id="tab-5"><h2>🔎 <strong>Auditoría de Vacíos</strong></h2><div class="form-group"><label>COLUMNA A AUDITAR:</label><input type="text" id="columnaAuditar" placeholder="Ej. TELEFONO"></div></div>
                     <div class="tab-content" id="tab-6"><h2>📝 <strong>Formateador</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA:</label><input type="text" id="columnaNormalizar" placeholder="Ej. NOMBRES"></div><div><label>FORMATO:</label><select id="tipoNormalizacion"><option value="upper">MAYÚSCULAS</option><option value="lower">minúsculas</option><option value="title">Tipo Título</option></select></div></div></div>
                     <div class="tab-content" id="tab-7"><h2>🎭 <strong>Anonimizador</strong></h2><div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><label>COLUMNA A OCULTAR:</label><input type="text" id="columnaAnonimizar" placeholder="Ej. CORREO"></div><div><label>PROTECCIÓN:</label><select id="tipoAnonimizar"><option value="email">Ocultar Email</option><option value="parcial">Ocultar Parcial</option><option value="total">Ocultar Total</option></select></div></div></div>
                     <div class="tab-content" id="tab-8"><h2>🎲 <strong>Muestra Aleatoria</strong></h2><div class="form-group"><label>CANTIDAD A EXTRAER:</label><input type="number" id="cantidadMuestra" placeholder="Ej. 500" value="100"></div></div>
-                    <div class="tab-content" id="tab-9"><h2>🧩 <strong>Consolidador</strong></h2><div class="info-box"><strong>ℹ️ Une múltiples Excels.</strong> Usa el botón "Añadir más".</div></div>
-                    <div class="tab-content" id="tab-10"><h2>⚔️ <strong>Comparador de Padrones</strong></h2><div class="form-group"><label>COLUMNA CLAVE (Ej. DNI):</label><input type="text" id="columnaComparar" placeholder="Debe existir en ambos archivos"></div></div>
+                    <div class="tab-content" id="tab-9"><h2>🧩 <strong>Consolidador</strong></h2><div class="info-box"><strong>ℹ️ Une múltiples Excels.</strong> Usa el botón "Añadir más" abajo para apilar los documentos.</div></div>
+                    <div class="tab-content" id="tab-10"><h2>⚔️ <strong>Comparador de Padrones</strong></h2><div class="info-box" style="border-left-color: var(--excel-color);"><strong>ℹ️ ¿Faltan registros?</strong> Sube exactamente 2 archivos. Extraeremos los datos que están en el primero pero no en el segundo.</div><div class="form-group"><label>COLUMNA CLAVE (Ej. DNI):</label><input type="text" id="columnaComparar" placeholder="Debe existir en ambos archivos"></div></div>
 
                     <!-- CONTENIDO PDF (11-16) -->
                     <div class="tab-content" id="tab-11"><h2>📕 <strong>Fusión PDF</strong></h2><div class="info-box pdf-box"><strong>ℹ️ Une múltiples PDFs.</strong> Usa "Añadir más".</div></div>
+                    
+                    <!-- HERRAMIENTA 12: CORTE VISUAL -->
                     <div class="tab-content" id="tab-12">
                         <h2>✂️ <strong>Corte Visual de PDF</strong></h2>
-                        <div class="info-box pdf-box">
-                            <strong>ℹ️ Extrae las páginas que no necesitas.</strong> Haz clic sobre las hojas que deseas eliminar (Se marcarán con una ✖ roja).
-                        </div>
-                        <!-- CONTENEDOR DONDE SE DIBUJAN LAS MINIATURAS -->
+                        <div class="info-box pdf-box"><strong>ℹ️ Extrae las páginas que no necesitas.</strong> Haz clic sobre las hojas que deseas eliminar (Se marcarán con una ✖ roja).</div>
                         <div id="pdfVisualGrid" style="display:none; margin-top: 25px;">
-                            <label style="color:var(--pdf-color); font-weight:800; font-size:15px; margin-bottom:15px; display:block;">
-                                👇 Haz clic en las páginas a borrar:
-                            </label>
+                            <label style="color:var(--pdf-color); font-weight:800; font-size:15px; margin-bottom:15px; display:block;">👇 Haz clic en las páginas a borrar:</label>
                             <div class="pdf-thumbnails-container" id="pdfThumbnailsContainer"></div>
                         </div>
                     </div>
+
                     <div class="tab-content" id="tab-13"><h2>🕵️ <strong>Auditoría de PDF</strong></h2><div class="info-box pdf-box">Genera reporte Excel con metadatos.</div></div>
                     <div class="tab-content" id="tab-14"><h2>🔄 <strong>Rotar Páginas</strong></h2><div class="form-group"><label>GRADOS:</label><select id="gradosRotar"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div></div>
                     <div class="tab-content" id="tab-15"><h2>🔏 <strong>Sellar Documento</strong></h2><div class="form-group"><label>TEXTO MARCA AGUA:</label><input type="text" id="textoMarcaAgua" placeholder="Ej. CONFIDENCIAL" value="CONFIDENCIAL"></div></div>
                     <div class="tab-content" id="tab-16"><h2>📄 <strong>Extraer a TXT</strong></h2><div class="info-box" style="background: rgba(37, 99, 235, 0.05); border-left-color: var(--primary);">Extrae todo el texto puro del PDF.</div></div>
 
-                    <!-- NUEVO: CONTENIDO CONVERTIDOR (17-19) -->
-                    <div class="tab-content" id="tab-17">
-                        <h2>🖼️ <strong>Extraer Imágenes de PDF</strong></h2>
-                        <div class="info-box conv-box"><strong>ℹ️ PDF a JPG.</strong> Sube un PDF y WOLF tomará una foto de cada página, empaquetándolas en un archivo ZIP.</div>
-                    </div>
-                    <div class="tab-content" id="tab-18">
-                        <h2>📄 <strong>Agrupar Imágenes a PDF</strong></h2>
-                        <div class="info-box conv-box"><strong>ℹ️ JPG/PNG a PDF.</strong> Sube múltiples fotos o escaneos y WOLF los unirá creando un documento PDF.</div>
-                    </div>
-                    <div class="tab-content" id="tab-19">
-                        <h2>🔄 <strong>Transformar Formato</strong></h2>
-                        <div class="info-box conv-box"><strong>ℹ️ Excel ↔ CSV.</strong> Sube un archivo Excel y te lo descargará como CSV, o viceversa, manteniendo toda tu data intacta.</div>
-                    </div>
+                    <!-- CONTENIDO CONVERTIDOR (17-19) -->
+                    <div class="tab-content" id="tab-17"><h2>🖼️ <strong>Extraer Imágenes de PDF</strong></h2><div class="info-box conv-box"><strong>ℹ️ PDF a JPG.</strong> WOLF tomará foto de cada página y las descargará en un archivo ZIP.</div></div>
+                    <div class="tab-content" id="tab-18"><h2>📄 <strong>Agrupar Imágenes a PDF</strong></h2><div class="info-box conv-box"><strong>ℹ️ JPG/PNG a PDF.</strong> Sube varias imágenes y conviértelas en un solo documento PDF.</div></div>
+                    <div class="tab-content" id="tab-19"><h2>🔄 <strong>Transformar Formato</strong></h2><div class="info-box conv-box"><strong>ℹ️ Excel ↔ CSV.</strong> Sube tu Excel y conviértelo a CSV, o viceversa, sin perder datos.</div></div>
 
                     <!-- ZONA DE CARGA & GESTOR DE ARCHIVOS -->
                     <div style="padding: 0 40px 40px 40px;">
-                        
                         <label class="upload-area" id="uploadArea">
                             <input type="file" id="fileInput" accept=".xlsx, .xls, .csv, .pdf" multiple onchange="agregarArchivos(event)" />
                             <span class="upload-emoji" id="iconCarga">📂</span>
@@ -341,19 +335,18 @@
         <a href="privacidad.html" style="color: var(--primary); text-decoration: none; font-weight: 700; margin-top: 10px; display: inline-block;">Políticas de Privacidad y Términos Legales</a>
     </div>
 
+    <!-- CÓDIGO JS PRINCIPAL -->
     <script>
         let archivosGlobales = [];
 
         window.onload = function() {
             if (typeof XLSX === 'undefined' || typeof PDFLib === 'undefined' || typeof pdfjsLib === 'undefined' || typeof JSZip === 'undefined') {
-                document.body.innerHTML = "<div style='text-align:center; padding: 100px; font-family:sans-serif;'><h2>⚠️ Error de Red</h2><p>Librerías base no cargadas. Revise su conexión o bloqueadores de anuncios.</p></div>";
+                document.body.innerHTML = "<div style='text-align:center; padding: 100px; font-family:sans-serif;'><h2>⚠️ Error de Red</h2><p>Librerías base no cargadas. Revise su conexión o bloqueadores.</p></div>";
             } else { mostrarDashboard(); }
         };
 
         function mostrarDashboard() {
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('workspace').style.display = 'none';
-            vaciarArchivos(); 
+            document.getElementById('dashboard').style.display = 'block'; document.getElementById('workspace').style.display = 'none'; vaciarArchivos(); 
         }
 
         function abrirModulo(tipo) {
@@ -386,24 +379,29 @@
             const fileInput = document.getElementById('fileInput');
             const iconCarga = document.getElementById('iconCarga');
             const txtFormatos = document.getElementById('formatosSoportados');
+            const gridVisualPDF = document.getElementById('pdfVisualGrid');
 
-            // Resetear estilos
             btnProcesar.className = "btn"; panelExportar.style.display = 'none';
 
-            if(index >= 17) { // MODO CONVERTIDOR
-                btnProcesar.classList.add('btn-conv'); btnProcesar.innerHTML = "🔄 CONVERTIR AHORA";
-                iconCarga.innerText = "🔄";
+            if(index >= 17) { 
+                btnProcesar.classList.add('btn-conv'); btnProcesar.innerHTML = "🔄 CONVERTIR AHORA"; iconCarga.innerText = "🔄";
                 if(index === 17) { fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube un archivo .PDF"; }
                 if(index === 18) { fileInput.accept = "image/png, image/jpeg, image/jpg"; txtFormatos.innerText = "Sube imágenes .JPG o .PNG"; }
                 if(index === 19) { fileInput.accept = ".xlsx, .xls, .csv"; txtFormatos.innerText = "Sube .XLSX o .CSV"; }
             } 
-            else if(index >= 11) { // MODO PDF
-                btnProcesar.classList.add('btn-pdf'); btnProcesar.innerHTML = "📕 PROCESAR PDF";
-                iconCarga.innerText = "📕"; fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube archivos .PDF";
+            else if(index >= 11) { 
+                btnProcesar.classList.add('btn-pdf'); btnProcesar.innerHTML = "📕 PROCESAR PDF"; iconCarga.innerText = "📕"; fileInput.accept = ".pdf"; txtFormatos.innerText = "Sube archivos .PDF";
             } 
-            else { // MODO EXCEL
-                btnProcesar.innerHTML = "🚀 PROCESAR DATOS";
-                panelExportar.style.display = 'flex'; iconCarga.innerText = "📊"; fileInput.accept = ".xlsx, .xls, .csv"; txtFormatos.innerText = "Soporta (.xlsx, .csv).";
+            else { 
+                btnProcesar.innerHTML = "🚀 PROCESAR DATOS"; panelExportar.style.display = 'flex'; iconCarga.innerText = "📊"; fileInput.accept = ".xlsx, .xls, .csv"; txtFormatos.innerText = "Soporta (.xlsx, .csv).";
+            }
+            
+            // Mostrar grid PDF si estamos en la 12 (Corte Visual)
+            if(gridVisualPDF) {
+                if(index === 12 && archivosGlobales.length > 0) {
+                    gridVisualPDF.style.display = 'block';
+                    if(document.getElementById('pdfThumbnailsContainer').innerHTML === '') renderizarMiniaturasPDF(archivosGlobales[0]);
+                } else { gridVisualPDF.style.display = 'none'; }
             }
             actualizarUIArchivos(); 
         }
@@ -416,26 +414,36 @@
         function agregarArchivos(event) {
             const input = event.target; if(input.files.length === 0) return;
             const esPDF = pestanaActual >= 11 && pestanaActual <= 16;
-            const esConvPDFImg = pestanaActual === 17;
-            const esConvImgPDF = pestanaActual === 18;
-            const esConvDatos = pestanaActual === 19;
+            const esConvPDFImg = pestanaActual === 17; const esConvImgPDF = pestanaActual === 18; const esConvDatos = pestanaActual === 19;
             
             let hubieronErrores = false;
-            
             for(let f of input.files) {
                 let ext = f.name.toLowerCase(); let valido = false;
                 if((esPDF || esConvPDFImg) && ext.endsWith('.pdf')) valido = true;
                 if(esConvImgPDF && (ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.png'))) valido = true;
                 if((pestanaActual < 11 || esConvDatos) && (ext.endsWith('.xlsx') || ext.endsWith('.xls') || ext.endsWith('.csv'))) valido = true;
-                
                 if(valido) archivosGlobales.push(f); else hubieronErrores = true;
             }
             if(hubieronErrores) mostrarEstado("⚠️ Algunos archivos omitidos por formato incorrecto.", "info");
             input.value = ""; actualizarUIArchivos();
+            
+            if(pestanaActual === 12 && archivosGlobales.length > 0) {
+                document.getElementById('pdfVisualGrid').style.display = 'block';
+                renderizarMiniaturasPDF(archivosGlobales[0]);
+            }
         }
 
-        function eliminarArchivo(index) { archivosGlobales.splice(index, 1); ocultarPreviewPDF(); actualizarUIArchivos(); }
-        function vaciarArchivos() { archivosGlobales = []; ocultarPreviewPDF(); actualizarUIArchivos(); }
+        function eliminarArchivo(index) { 
+            archivosGlobales.splice(index, 1); ocultarPreviewPDF(); 
+            document.getElementById('pdfThumbnailsContainer').innerHTML = '';
+            if(pestanaActual === 12 && archivosGlobales.length > 0) { renderizarMiniaturasPDF(archivosGlobales[0]); } else if(pestanaActual === 12) { document.getElementById('pdfVisualGrid').style.display = 'none'; }
+            actualizarUIArchivos(); 
+        }
+        function vaciarArchivos() { 
+            archivosGlobales = []; ocultarPreviewPDF(); 
+            document.getElementById('pdfThumbnailsContainer').innerHTML = ''; document.getElementById('pdfVisualGrid').style.display = 'none';
+            actualizarUIArchivos(); 
+        }
 
         function actualizarUIArchivos() {
             const areaCarga = document.getElementById('uploadArea'); const fileManager = document.getElementById('fileManager'); const fileGrid = document.getElementById('fileGrid'); const preview = document.getElementById('previewContainer');
@@ -444,17 +452,14 @@
             
             let htmlCards = '';
             archivosGlobales.forEach((f, i) => {
-                const isPdf = f.name.toLowerCase().endsWith('.pdf'); 
-                const isImg = f.name.toLowerCase().match(/\.(jpg|jpeg|png)$/);
-                const objectURL = URL.createObjectURL(f);
-                const icono = isPdf ? '📕' : (isImg ? '🖼️' : '📊');
-                const color = isPdf ? 'var(--pdf-color)' : (isImg ? 'var(--conv-color)' : 'var(--excel-color)');
-                
+                const isPdf = f.name.toLowerCase().endsWith('.pdf'); const isImg = f.name.toLowerCase().match(/\.(jpg|jpeg|png)$/);
+                const objectURL = URL.createObjectURL(f); const icono = isPdf ? '📕' : (isImg ? '🖼️' : '📊'); const color = isPdf ? 'var(--pdf-color)' : (isImg ? 'var(--conv-color)' : 'var(--excel-color)');
                 htmlCards += `<div class="file-card" ${isPdf ? `onmouseenter="mostrarPreviewPDF(event, '${objectURL}')" onmouseleave="ocultarPreviewPDF()"` : ''}><div class="file-card-icon" style="color: ${color}">${icono}</div><div class="file-card-info"><span class="file-card-name" title="${f.name}">${f.name}</span><span class="file-card-size">${formatearBytes(f.size)}</span></div><button class="file-card-remove" onclick="eliminarArchivo(${i}); event.stopPropagation();" title="Eliminar">✖</button></div>`;
             });
             htmlCards += `<div class="file-card add-more-card" onclick="document.getElementById('fileInput').click()"><div class="file-card-icon" style="color: var(--primary);">➕</div><div class="file-card-info"><span class="file-card-name" style="color: var(--primary);">Añadir más...</span></div></div>`;
             fileGrid.innerHTML = htmlCards;
 
+            // Extra para EXCEL (no mostrar en consolidar ni comparar)
             if(pestanaActual < 11 && archivosGlobales.length > 0 && pestanaActual !== 9 && pestanaActual !== 10) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -479,11 +484,36 @@
         }
         function ocultarPreviewPDF() { document.getElementById('pdfHoverPreview').style.display = 'none'; document.getElementById('pdfPreviewFrame').src = ""; }
 
+        // ==========================================
+        // CORTADOR VISUAL PDF.JS
+        // ==========================================
+        async function renderizarMiniaturasPDF(archivo) {
+            const container = document.getElementById('pdfThumbnailsContainer');
+            container.innerHTML = `<em style="color:var(--pdf-color); font-size:14px; margin: 20px;">⏳ Generando vista de las páginas...</em>`;
+            const fileReader = new FileReader();
+            fileReader.onload = async function() {
+                try {
+                    const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise; container.innerHTML = ''; 
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i); const viewport = page.getViewport({ scale: 0.6 }); 
+                        const wrapper = document.createElement('div'); wrapper.className = 'pdf-page-thumb'; wrapper.dataset.pageIndex = i - 1; 
+                        wrapper.onclick = function() { this.classList.toggle('deleted'); };
+                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                        canvas.width = viewport.width; canvas.height = viewport.height;
+                        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                        const pageNumber = document.createElement('div'); pageNumber.className = 'page-number'; pageNumber.innerText = 'Pág ' + i;
+                        const overlay = document.createElement('div'); overlay.className = 'delete-overlay'; overlay.innerHTML = '✖';
+                        wrapper.appendChild(canvas); wrapper.appendChild(pageNumber); wrapper.appendChild(overlay); container.appendChild(wrapper);
+                    }
+                } catch (e) { container.innerHTML = `<em style="color:var(--pdf-color); margin: 20px;">❌ Error al generar la vista previa.</em>`; }
+            }; fileReader.readAsArrayBuffer(archivo);
+        }
+
+        // --- ENRUTADOR PRINCIPAL ---
         function setCarga(estado) { const overlay = document.getElementById('loadingOverlay'); if(estado) { overlay.style.display = 'flex'; window.onbeforeunload = function() { return "Procesando..."; }; } else { overlay.style.display = 'none'; window.onbeforeunload = null; } }
         function mostrarEstado(mensaje, tipo) { const status = document.getElementById('status'); status.style.display = "block"; status.className = `status-${tipo}`; status.innerText = mensaje; }
         function descargarBlob(dataBytes, nombreArchivo, mimeType) { const blob = new Blob([dataBytes], { type: mimeType }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = nombreArchivo; link.click(); }
 
-        // --- ENRUTADOR PRINCIPAL ---
         async function ejecutarHerramienta() {
             if (archivosGlobales.length === 0) { mostrarEstado("⚠️ Agregue archivos al sistema.", "error"); return; }
             setCarga(true);
@@ -493,10 +523,10 @@
                 if(pestanaActual === 18) { await imagenAPdf(archivosGlobales); setCarga(false); return; }
                 if(pestanaActual === 19) { await convertirDatos(archivosGlobales[0]); setCarga(false); return; }
 
-                // MODULOS PDF
+                // MODULOS PDF (11 al 16)
                 if(pestanaActual >= 11 && pestanaActual <= 16) {
                     if(pestanaActual === 11) await unirPdfs(archivosGlobales);
-                    // (Cortar PDF se omite código visual completo por espacio, se deja versión lógica simple)
+                    if(pestanaActual === 12) await cortarPdfVisual(archivosGlobales[0]); // AHORA SÍ ESTÁ ENRUTADO
                     if(pestanaActual === 13) await auditarPdfs(archivosGlobales);
                     if(pestanaActual === 14) await rotarPdf(archivosGlobales[0]);
                     if(pestanaActual === 15) await marcaAguaPdf(archivosGlobales[0]);
@@ -519,6 +549,7 @@
 
                             if(pestanaActual === 0) ejecutarDuplicados(json_data);
                             else if(pestanaActual === 1) ejecutarExtraccion(json_data);
+                            else if(pestanaActual === 2) ejecutarEliminarColumnas(json_data); // AHORA SÍ ESTÁ ENRUTADO (FALTABA EN V6!)
                             else if(pestanaActual === 3) ejecutarSeparador(json_data, obtenerFormato());
                             else if(pestanaActual === 4) ejecutarConteo(json_data);
                             else if(pestanaActual === 5) ejecutarAuditoria(json_data);
@@ -533,72 +564,59 @@
         }
 
         // =====================================
-        // MOTORES DEL CONVERTIDOR UNIVERSAL
+        // MOTORES DEL CONVERTIDOR
         // =====================================
-        
         async function pdfAImagen(archivo) {
-            const buffer = await archivo.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument(new Uint8Array(buffer)).promise;
-            const zip = new JSZip();
-
+            const buffer = await archivo.arrayBuffer(); const pdf = await pdfjsLib.getDocument(new Uint8Array(buffer)).promise; const zip = new JSZip();
             for(let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const viewport = page.getViewport({scale: 2.0}); // Calidad 2x
-                const canvas = document.createElement('canvas');
-                canvas.width = viewport.width; canvas.height = viewport.height;
-                const ctx = canvas.getContext('2d');
+                const page = await pdf.getPage(i); const viewport = page.getViewport({scale: 2.0}); const canvas = document.createElement('canvas');
+                canvas.width = viewport.width; canvas.height = viewport.height; const ctx = canvas.getContext('2d');
                 await page.render({canvasContext: ctx, viewport: viewport}).promise;
-                
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
-                zip.file(`Pagina_${i}.jpg`, blob);
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9)); zip.file(`Pagina_${i}.jpg`, blob);
             }
-            const zipBlob = await zip.generateAsync({type: 'blob'});
-            descargarBlob(zipBlob, `Imagenes_Extraidas_${archivo.name}.zip`, "application/zip");
+            descargarBlob(await zip.generateAsync({type: 'blob'}), `Imagenes_${archivo.name}.zip`, "application/zip");
             mostrarEstado("✅ PDF convertido. Archivo ZIP descargado.", "success");
         }
-
         async function imagenAPdf(archivos) {
-            const { PDFDocument } = PDFLib;
-            const pdfDoc = await PDFDocument.create();
-
+            const { PDFDocument } = PDFLib; const pdfDoc = await PDFDocument.create();
             for(let f of archivos) {
-                const bytes = await f.arrayBuffer();
-                let img;
-                if(f.name.toLowerCase().endsWith('.png')) img = await pdfDoc.embedPng(bytes);
-                else img = await pdfDoc.embedJpg(bytes);
-
-                const page = pdfDoc.addPage([img.width, img.height]);
-                page.drawImage(img, {x: 0, y: 0, width: img.width, height: img.height});
+                const bytes = await f.arrayBuffer(); let img;
+                if(f.name.toLowerCase().endsWith('.png')) img = await pdfDoc.embedPng(bytes); else img = await pdfDoc.embedJpg(bytes);
+                const page = pdfDoc.addPage([img.width, img.height]); page.drawImage(img, {x: 0, y: 0, width: img.width, height: img.height});
             }
-            const pdfBytes = await pdfDoc.save();
-            descargarBlob(pdfBytes, "Imagenes_Agrupadas.pdf", "application/pdf");
-            mostrarEstado("✅ Imágenes convertidas a PDF con éxito.", "success");
+            descargarBlob(await pdfDoc.save(), "Imagenes_Agrupadas.pdf", "application/pdf");
+            mostrarEstado("✅ Imágenes convertidas a PDF.", "success");
         }
-
         async function convertirDatos(archivo) {
-            const ext = archivo.name.toLowerCase();
-            const esExcel = ext.endsWith('.xlsx') || ext.endsWith('.xls');
-            const buffer = await archivo.arrayBuffer();
-            const workbook = XLSX.read(new Uint8Array(buffer), {type: 'array'});
-            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-            if(esExcel) {
-                const csv = XLSX.utils.sheet_to_csv(worksheet);
-                const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: "text/csv;charset=utf-8;" });
-                descargarBlob(blob, `Convertido_${archivo.name}.csv`, "text/csv");
-                mostrarEstado("✅ Archivo Excel convertido a CSV.", "success");
-            } else {
-                const nuevoWorkbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(nuevoWorkbook, worksheet, "Hoja1");
-                XLSX.writeFile(nuevoWorkbook, `Convertido_${archivo.name}.xlsx`);
-                mostrarEstado("✅ Archivo CSV convertido a Excel.", "success");
-            }
+            const esExcel = archivo.name.toLowerCase().endsWith('.xlsx') || archivo.name.toLowerCase().endsWith('.xls');
+            const w = XLSX.read(new Uint8Array(await archivo.arrayBuffer()), {type: 'array'}); const ws = w.Sheets[w.SheetNames[0]];
+            if(esExcel) { const csv = XLSX.utils.sheet_to_csv(ws); descargarBlob(new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: "text/csv;charset=utf-8;" }), `Convertido_${archivo.name}.csv`, "text/csv"); mostrarEstado("✅ Excel convertido a CSV.", "success");
+            } else { const nw = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(nw, ws, "Hoja1"); XLSX.writeFile(nw, `Convertido_${archivo.name}.xlsx`); mostrarEstado("✅ CSV convertido a Excel.", "success"); }
         }
 
         // =====================================
-        // MOTORES RESTANTES (MINIFICADOS)
+        // MOTORES PDF Y EXCEL
         // =====================================
         async function unirPdfs(ar){const{PDFDocument}=PDFLib;const pM=await PDFDocument.create();for(let a of ar){const b=await a.arrayBuffer();const pP=await PDFDocument.load(b);const pg=await pM.copyPages(pP,pP.getPageIndices());pg.forEach(p=>pM.addPage(p));}descargarBlob(await pM.save(),"PDF_Unificado.pdf","application/pdf");mostrarEstado("✅ PDFs unidos.","success");}
+        
+        // LA FUNCIÓN DE CORTAR PDF QUE FALTABA (AQUÍ ESTÁ COMPLETA)
+        async function cortarPdfVisual(archivo) {
+            const marcados = document.querySelectorAll('.pdf-page-thumb.deleted');
+            if(marcados.length === 0) throw new Error("Haz clic sobre las páginas que deseas borrar en la cuadrícula superior.");
+            
+            const indicesABorrar = Array.from(marcados).map(thumb => parseInt(thumb.dataset.pageIndex)).sort((a, b) => b - a);
+            const { PDFDocument } = PDFLib; 
+            const buffer = await archivo.arrayBuffer(); 
+            const pdf = await PDFDocument.load(buffer);
+            
+            if(indicesABorrar.length >= pdf.getPageCount()) throw new Error("No puedes eliminar todas las páginas del documento.");
+            indicesABorrar.forEach(idx => pdf.removePage(idx));
+            
+            const pdfBytes = await pdf.save(); 
+            descargarBlob(pdfBytes, `Cortado_${archivo.name}`, "application/pdf");
+            mostrarEstado(`✂️ Éxito: Se eliminaron ${indicesABorrar.length} páginas de forma visual.`, "success");
+        }
+
         async function auditarPdfs(ar){const{PDFDocument}=PDFLib;let r=[];for(let a of ar){const b=await a.arrayBuffer();try{const p=await PDFDocument.load(b);r.push({"Archivo":a.name,"Peso (KB)":(a.size/1024).toFixed(2),"Páginas":p.getPageCount(),"Autor":p.getAuthor()||"N/A","Creación":p.getCreationDate()?p.getCreationDate().toLocaleDateString():"N/A"});}catch(e){r.push({"Archivo":a.name,"Error":"Protegido"});}}const nW=XLSX.utils.book_new();XLSX.utils.book_append_sheet(nW,XLSX.utils.json_to_sheet(r),"Auditoria");XLSX.writeFile(nW,`Auditoria_PDFs.xlsx`);mostrarEstado("✅ Auditoría lista.","success");}
         async function rotarPdf(ar){const g=parseInt(document.getElementById('gradosRotar').value);const{PDFDocument,degrees}=PDFLib;const p=await PDFDocument.load(await ar.arrayBuffer());p.getPages().forEach(pg=>pg.setRotation(degrees(g)));descargarBlob(await p.save(),"Rotado.pdf","application/pdf");mostrarEstado("✅ PDF Rotado.","success");}
         async function marcaAguaPdf(ar){const txt=document.getElementById('textoMarcaAgua').value||"CONFIDENCIAL";const{PDFDocument,rgb,degrees}=PDFLib;const p=await PDFDocument.load(await ar.arrayBuffer());p.getPages().forEach(pg=>{const{width,height}=pg.getSize();pg.drawText(txt,{x:width/2-150,y:height/2-50,size:50,color:rgb(0.9,0.2,0.2),opacity:0.3,rotate:degrees(45)});});descargarBlob(await p.save(),"Marcado.pdf","application/pdf");mostrarEstado("✅ PDF Sellado.","success");}
@@ -613,6 +631,7 @@
         
         function ejecutarDuplicados(jd){const inCol=document.getElementById('columnaClave').value;if(!inCol)throw new Error("Falta columna.");let d=[],v=new Set(),det=false;jd.forEach(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;let val=f[c];if(val!==""&&val!==undefined){if(!v.has(val)){v.add(val);d.push(f);}}else d.push(f);}else d.push(f);});if(!det)throw new Error("Columna no existe.");exportarData(d,"Unicos");mostrarEstado(`✅ ${jd.length-d.length} duplicados eliminados.`,"success");}
         function ejecutarExtraccion(jd){const inCol=document.getElementById('colBuscar').value;const vB=document.getElementById('valBuscar').value.replace(/\s+/g,' ').trim().toLowerCase();if(!inCol||!vB)throw new Error("Faltan parámetros.");let det=false;const dE=jd.filter(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;return f[c]&&String(f[c]).replace(/\s+/g,' ').trim().toLowerCase()===vB;}return false;});if(!det)throw new Error("Columna no existe.");if(dE.length===0)throw new Error("Sin coincidencias.");exportarData(dE,"Extracto");mostrarEstado(`✅ ${dE.length} filas capturadas.`,"success");}
+        function ejecutarEliminarColumnas(json_data) { const checkboxes = Array.from(document.querySelectorAll('.col-checkbox:checked')).map(cb => cb.value); if(checkboxes.length === 0) throw new Error("Seleccione al menos una columna de la lista de abajo marcando las casillas."); const datosLimpios = json_data.map(fila => { let nuevaFila = { ...fila }; checkboxes.forEach(col => delete nuevaFila[col]); return nuevaFila; }); exportarData(datosLimpios, "Estructura_Limpia"); mostrarEstado(`🧹 Limpieza Finalizada: ${checkboxes.length} variables eliminadas.`, "success"); }
         function ejecutarSeparador(jd,fto){if(fto==='csv')throw new Error("Use Excel.");const inCol=document.getElementById('columnaAgrupar').value;if(!inCol)throw new Error("Falta columna.");let g={},hC=0,det=false;jd.forEach(f=>{let c=buscarColumnaReal(f,inCol);if(c){det=true;if(f[c]!==""){let nH=String(f[c]).trim().substring(0,30).replace(/[\\/?*\[\]:]/g,"_");if(!g[nH])g[nH]=[];g[nH].push(f);}}});if(!det)throw new Error("Columna no encontrada.");const nW=XLSX.utils.book_new();for(let n in g){XLSX.utils.book_append_sheet(nW,XLSX.utils.json_to_sheet(g[n]),n);hC++;}if(hC===0)throw new Error("Sin datos.");XLSX.writeFile(nW,`Separadas.xlsx`);mostrarEstado(`✅ Segmentado en ${hC} hojas.`,"success");}
         function ejecutarConteo(jd){const inCol=document.getElementById('columnaContar').value;if(!inCol)throw new Error("Falta columna.");let c={},t=0,det=false;jd.forEach(f=>{let cR=buscarColumnaReal(f,inCol);if(cR){det=true;if(f[cR]!==""){let k=String(f[cR]).trim();c[k]=(c[k]||0)+1;t++;}}});if(!det)throw new Error("Columna no existe.");if(t===0)throw new Error("Sin datos.");let dR=Object.keys(c).map(k=>({"Categoría":k,"Frecuencia":c[k]}));dR.sort((a,b)=>b.Frecuencia-a.Frecuencia);exportarData(dR,"Resumen");mostrarEstado(`✅ ${t} registros procesados.`,"success");}
         function ejecutarAuditoria(jd){const inCol=document.getElementById('columnaAuditar').value;if(!inCol)throw new Error("Falta columna.");let det=false;const inc=jd.filter(f=>{let c=buscarColumnaReal(f,inCol);if(c)det=true;return !c||f[c]===undefined||f[c]===null||String(f[c]).trim()==="";});if(!det)throw new Error("Columna no existe.");if(inc.length===0){mostrarEstado("✅ Auditoría limpia.","success");return;}exportarData(inc,"Vacios");mostrarEstado(`🔎 ${inc.length} registros en blanco.`,"error");}
