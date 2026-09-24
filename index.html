@@ -935,6 +935,37 @@
         function ejecutarNormalizador(jd){const inCol=document.getElementById('columnaNormalizar').value;const t=document.getElementById('tipoNormalizacion').value;let det=false;let dN=jd.map(f=>{let nF={...f};if(inCol.trim()!==""){let c=buscarColumnaReal(f,inCol);if(c){det=true;if(typeof nF[c]==='string'){let x=nF[c].trim().replace(/\s+/g,' ');nF[c]=t==='upper'?x.toUpperCase():t==='lower'?x.toLowerCase():x.toLowerCase().replace(/(?:^|\s)\S/g,a=>a.toUpperCase());}}}else{det=true;for(let k in nF){if(typeof nF[k]==='string'){let x=nF[k].trim().replace(/\s+/g,' ');nF[k]=t==='upper'?x.toUpperCase():t==='lower'?x.toLowerCase():x.toLowerCase().replace(/(?:^|\s)\S/g,a=>a.toUpperCase());}}}return nF;});if(!det)throw new Error("Columna no encontrada.");exportarData(dN,"Formateados");mostrarEstado("✅ Textos formateados.","success");}
         function ejecutarAnonimizador(jd){const inCol=document.getElementById('columnaAnonimizar').value;const t=document.getElementById('tipoAnonimizar').value;if(!inCol)throw new Error("Falta columna.");let det=false;let dA=jd.map(f=>{let nF={...f};let c=buscarColumnaReal(f,inCol);if(c&&nF[c]){det=true;let s=String(nF[c]).trim();if(s.length>0){if(t==='email'){let p=s.split('@');nF[c]=p.length===2?p[0].charAt(0)+'***@'+p[1]:s.charAt(0)+'***';}else if(t==='parcial'){nF[c]=s.length>4?s.substring(0,3)+'****'+s.substring(s.length-1):'***';}else{nF[c]='********';}}}return nF;});if(!det)throw new Error("Columna no existe.");exportarData(dA,"Anonimizados");mostrarEstado("✅ Privacidad aplicada.","success");}
         function ejecutarMuestreo(jd){let c=parseInt(document.getElementById('cantidadMuestra').value);if(isNaN(c)||c<=0)throw new Error("Cantidad inválida.");if(c>=jd.length){mostrarEstado(`⚠️ Cantidad mayor al total.`,"info");return;}let a=[...jd];let d=[];for(let i=0;i<c;i++){let r=Math.floor(Math.random()*a.length);d.push(a[r]);a.splice(r,1);}exportarData(d,"Muestra");mostrarEstado(`✅ ${c} registros al azar.`,"success");}
+
+        // ==========================================
+        // HABILITAR ARRASTRAR Y SOLTAR (DRAG & DROP)
+        // ==========================================
+        const areaArrastre = document.getElementById('uploadArea');
+
+        areaArrastre.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Evita que el navegador abra el archivo en otra pestaña
+            areaArrastre.style.borderColor = 'var(--primary)';
+            areaArrastre.style.background = 'var(--info-bg)';
+            areaArrastre.style.transform = 'scale(1.02)';
+        });
+
+        areaArrastre.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            areaArrastre.style.borderColor = 'var(--border-color)';
+            areaArrastre.style.background = 'var(--upload-bg)';
+            areaArrastre.style.transform = 'scale(1)';
+        });
+
+        areaArrastre.addEventListener('drop', (e) => {
+            e.preventDefault();
+            areaArrastre.style.borderColor = 'var(--border-color)';
+            areaArrastre.style.background = 'var(--upload-bg)';
+            areaArrastre.style.transform = 'scale(1)';
+            
+            // Si el usuario soltó archivos, los capturamos y los mandamos a tu función existente
+            if (e.dataTransfer.files.length > 0) {
+                agregarArchivos({ target: { files: e.dataTransfer.files } });
+            }
+        });
     </script>
 </body>
 </html>
